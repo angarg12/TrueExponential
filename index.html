@@ -1,0 +1,17 @@
+<body ng-app="incremental">
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/exponential.js"></script>
+ <div ng-controller="IncCtrl">
+  <h1>True exponential</h1>
+  <h2>Cash multiplier: {{(1+multiplier).toFixed(4)}}</h2>
+  <hr>
+      <button ng-click="click()">Generate cash {{cashPerClick()}}$</button>
+  <p>Cash: ${{currency}}</p>    
+  <button ng-click="buyUpgrade(0)" ng-disabled="currency < upgradePrice(0)">+0.0001 (cost ${{upgradePrice(0)}})</button>
+  <button ng-click="buyUpgrade(1)" ng-disabled="currency < upgradePrice(1)">+0.001 (cost ${{upgradePrice(1)}})</button>
+  <button ng-click="buyUpgrade(2)" ng-disabled="currency < upgradePrice(2)">+0.01 (cost ${{upgradePrice(2)}})</button>
+        <button ng-click="buyUpgrade(3)" ng-disabled="currency < upgradePrice(3)">+0.1 (cost ${{upgradePrice(3)}})</button>
+        <button ng-click="buyUpgrade(4)" ng-disabled="currency < upgradePrice(4)">+1 (cost ${{upgradePrice(4)}})</button>
+  <hr>
+ </div>
+</body>
