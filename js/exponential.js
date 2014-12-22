@@ -1,6 +1,6 @@
 angular.module('incremental',[])
-    .controller('IncCtrl',['$scope','$document','$interval',function($scope,$document,$interval) {
-        BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 4 })
+    .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) {
+        BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 4 });
         var lastUpdate = 0;
         var upgradeBasePrice = [10,
                                 100,
@@ -12,14 +12,10 @@ angular.module('incremental',[])
                             0.01,
                             0.1,
                             1];
-        var cashPerClick = 1;
+        $scope.cashPerClick = 100000;
         
         $scope.multiplier = 0;
 
-        $scope.cashPerClick = function() {
-            return cashPerClick;
-        };
-        
         $scope.upgrades = [0,
                            0,
                            0,
@@ -29,13 +25,18 @@ angular.module('incremental',[])
         
 		$scope.currencyValue = function() {
 			if($scope.currency.comparedTo(10e13) >= 0){
-				return $scope.currency.toPrecision(15);
+				// Very ugly way to extract the mantisa and exponent from an exponential string
+				var number=$scope.currency.toExponential(13).split("e");
+				var exponent = number[1].split("+")[1];
+				//return $scope.currency.toPrecision(15);
+				// And it is displayed in with superscript
+				return  $sce.trustAsHtml(number[0]+" x 10<sup>"+exponent+"</sup>");
 			}
-			return $scope.currency.toString();
+			return $sce.trustAsHtml($scope.currency.toString());
 		}
 		
         $scope.click = function() {
-            $scope.currency = $scope.currency.plus(($scope.cashPerClick()));
+            $scope.currency = $scope.currency.plus(($scope.cashPerClick));
         };
         
         $scope.upgradePrice = function(number) {
