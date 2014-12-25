@@ -1,6 +1,5 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) {
-        BigNumber.config({ DECIMAL_PLACES: 10, ROUNDING_MODE: 4 });
         var lastUpdate = 0;
         var upgradeBasePrice = [10,
                                 100,
@@ -12,7 +11,7 @@ angular.module('incremental',[])
                             0.01,
                             0.1,
                             1];
-        $scope.cashPerClick = 100000;
+        $scope.cashPerClick = 1;
         
         $scope.multiplier = 0;
 
@@ -21,7 +20,7 @@ angular.module('incremental',[])
                            0,
                            0,
                            0];
-        $scope.currency = new BigNumber(0);
+        $scope.currency = new Decimal(0);
         
 		$scope.currencyValue = function() {
 			return $sce.trustAsHtml(prettifyNumber($scope.currency));
@@ -47,18 +46,18 @@ angular.module('incremental',[])
             var updateTime = new Date().getTime();
             var timeDiff = (Math.min(1000, Math.max(updateTime - lastUpdate,0))) / 1000;
             lastUpdate = updateTime;
-            var updateMultiplier = 1+$scope.multiplier * timeDiff;
-            $scope.currency = $scope.currency.times(updateMultiplier.toFixed(15)).round(15);
-            
-
+            var updateMultiplier = (1+$scope.multiplier * timeDiff).toFixed(15);
+            $scope.currency = $scope.currency.times(updateMultiplier);
         };
         
 		function prettifyNumber(number){
-			if(number.comparedTo(10e13) >= 0){
+		if(number.comparedTo(Infinity) == 0){
+			return "&infin;";
+		}
+		if(number.comparedTo(1e21) >= 0){
 				// Very ugly way to extract the mantisa and exponent from an exponential string
-				var exponential = number.toExponential(13).split("e");
-				var exponent = new BigNumber(exponential[1].split("+")[1]);
-				//return $scope.currency.toPrecision(15);
+				var exponential = number.toString().split("e");
+				var exponent = new Decimal(exponential[1].split("+")[1]);
 				// And it is displayed in with superscript
 				return  exponential[0]+" x 10<sup>"+prettifyNumber(exponent)+"</sup>";
 			}
