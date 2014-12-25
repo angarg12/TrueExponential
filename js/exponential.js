@@ -24,15 +24,7 @@ angular.module('incremental',[])
         $scope.currency = new BigNumber(0);
         
 		$scope.currencyValue = function() {
-			if($scope.currency.comparedTo(10e13) >= 0){
-				// Very ugly way to extract the mantisa and exponent from an exponential string
-				var number=$scope.currency.toExponential(13).split("e");
-				var exponent = number[1].split("+")[1];
-				//return $scope.currency.toPrecision(15);
-				// And it is displayed in with superscript
-				return  $sce.trustAsHtml(number[0]+" x 10<sup>"+exponent+"</sup>");
-			}
-			return $sce.trustAsHtml($scope.currency.toString());
+			return $sce.trustAsHtml(prettifyNumber($scope.currency));
 		}
 		
         $scope.click = function() {
@@ -61,6 +53,18 @@ angular.module('incremental',[])
 
         };
         
+		function prettifyNumber(number){
+			if(number.comparedTo(10e13) >= 0){
+				// Very ugly way to extract the mantisa and exponent from an exponential string
+				var exponential = number.toExponential(13).split("e");
+				var exponent = new BigNumber(exponential[1].split("+")[1]);
+				//return $scope.currency.toPrecision(15);
+				// And it is displayed in with superscript
+				return  exponential[0]+" x 10<sup>"+prettifyNumber(exponent)+"</sup>";
+			}
+			return number.toString();
+		};
+		
         $document.ready(function(){
             $interval(update,80);
         });
