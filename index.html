@@ -4,17 +4,43 @@
  <script type="text/javascript" src="js/exponential.js"></script>
  <script type="text/javascript" src="js/decimal.min.js"></script>
  <div ng-controller="IncCtrl">
-  <h1>True exponential v0.3</h1>
-  <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
-  <hr>
-      <button ng-click="click()">Generate cash ${{player.cashPerClick}}</button>
-	  <p>Cash: $<span ng-bind-html="currencyValue()"/></p>    
-	  <button ng-click="buyUpgrade(0)" ng-disabled="player.currency.comparedTo(upgradePrice(0)) < 0">+0.0001 (cost ${{upgradePrice(0)}})</button>
-	  <button ng-click="buyUpgrade(1)" ng-disabled="player.currency.comparedTo(upgradePrice(1)) < 0">+0.001 (cost ${{upgradePrice(1)}})</button>
-	  <button ng-click="buyUpgrade(2)" ng-disabled="player.currency.comparedTo(upgradePrice(2)) < 0">+0.01 (cost ${{upgradePrice(2)}})</button>
-	  <button ng-click="buyUpgrade(3)" ng-disabled="player.currency.comparedTo(upgradePrice(3)) < 0">+0.1 (cost ${{upgradePrice(3)}})</button>
-	  <button ng-click="buyUpgrade(4)" ng-disabled="player.currency.comparedTo(upgradePrice(4)) < 0">+1 (cost ${{upgradePrice(4)}})</button>
-  <hr>
-  <p><small>By angarg12 GPLv2 | <a href="changelog.txt" target="_newtab">Changelog</a> | <a href="https://github.com/angarg12/TrueExponential" target="_newtab">Github</a></small></p>
+  <h1>True exponential</h1>
+  <a href="#game">Game</a> |
+  <a href="#options">Options</a>
+  <div id="game">
+	  <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
+	  <hr>
+		  <button ng-click="click()">Generate cash ${{player.cashPerClick}}</button>
+		  <p>Cash: $<span ng-bind-html="currencyValue()"/></p>    
+		  <button ng-click="buyUpgrade(0)" ng-disabled="player.currency.comparedTo(upgradePrice(0)) < 0">+0.0001 (cost ${{upgradePrice(0)}})</button>
+		  <button ng-click="buyUpgrade(1)" ng-disabled="player.currency.comparedTo(upgradePrice(1)) < 0">+0.001 (cost ${{upgradePrice(1)}})</button>
+		  <button ng-click="buyUpgrade(2)" ng-disabled="player.currency.comparedTo(upgradePrice(2)) < 0">+0.01 (cost ${{upgradePrice(2)}})</button>
+		  <button ng-click="buyUpgrade(3)" ng-disabled="player.currency.comparedTo(upgradePrice(3)) < 0">+0.1 (cost ${{upgradePrice(3)}})</button>
+		  <button ng-click="buyUpgrade(4)" ng-disabled="player.currency.comparedTo(upgradePrice(4)) < 0">+1 (cost ${{upgradePrice(4)}})</button>
+	  <hr>
+   </div>  
+	<div id="options">
+	  <h2>Options</h2>
+		<table id="optionTable">
+			<tr><td>
+				<button id="reset" onclick="reset()">Reset Save</button>
+			</td></tr>
+			<tr><td>
+				<button id="save" onclick="save()">Save</button>
+				<td>Last save time: <span id="lastSave">None</span></td>
+			</td></tr>
+			<tr><td>
+				<button id="exportSave" onclick="exportSave()">Export Save</button>
+				<td id="exportSaveContents" style="display: none">
+				Copy this text:
+				<input id="exportSaveText" type="text" readonly>
+				</td>
+			</td></tr>
+			<tr><td>
+				<button id="importSave" onclick="importSave()">Import Save</button>
+			</td></tr>
+		</table>
+	</div>
+   <p><small>By angarg12 GPLv2 | <a href="changelog.txt" target="_newtab">Changelog</a> | <a href="https://github.com/angarg12/TrueExponential" target="_newtab">Github</a></small></p>
  </div>
 </body>
