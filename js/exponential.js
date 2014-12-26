@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = 0.3;
+		$scope.version = 0.4;
 		
 		var startPlayer = {
 			cashPerClick:1,
@@ -52,6 +52,44 @@ angular.module('incremental',[])
             }
         };
         
+		$scope.save = function save() {
+			localStorage.setItem("playerStored", JSON.stringify($scope.player));
+			var d = new Date();
+			$scope.lastSave = d.toLocaleTimeString();
+		}
+		
+		$scope.load = function load() {
+			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
+			$scope.player.currency = new Decimal($scope.player.currency);
+		}
+		
+		$scope.reset = function reset() {
+			var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
+			if(confirmation === true){
+				$scope.player = angular.copy(startPlayer);
+				localStorage.removeItem("playerStored");
+			}
+		}
+		
+		$scope.exportSave = function exportSave() {
+			var exportText = btoa(JSON.stringify($scope.player));
+			
+			document.getElementById("exportSaveContents").style = "display: initial";
+			document.getElementById("exportSaveText").value = exportText;
+			document.getElementById("exportSaveText").select();
+		}
+		
+		$scope.importSave = function importSave(){
+			var importText = prompt("Paste the text you were given by the export save dialog here.\n" +
+										"Warning: this will erase your current save!");
+			if(importText){
+				$scope.player = JSON.parse(atob(importText));
+				$scope.player.currency = new Decimal($scope.player.currency);
+				versionControl(true);
+				save();
+			}
+		}
+		
         function update() {
             var updateTime = new Date().getTime();
             var timeDiff = (Math.min(1000, Math.max(updateTime - lastUpdate,0))) / 1000;
@@ -74,10 +112,26 @@ angular.module('incremental',[])
 			return number.toString();
 		};
 		
+		function versionControl(ifImport){
+			if($scope.player.version < $scope.version || 
+				typeof $scope.player.version == 'undefined'){
+				$scope.player.version = $scope.version;
+			}
+		};
+
+		
         $document.ready(function(){
+			if(localStorage.getItem("playerStored") != null){
+				$scope.load();
+			}
 			if(typeof $scope.player  === 'undefined'){
 				$scope.player = angular.copy(startPlayer);
 			}
+			if(typeof $scope.lastSave  === 'undefined'){
+				$scope.lastSave = "None";
+			}
+			versionControl(false);
             $interval(update,80);
+            $interval($scope.save,60000);
         });
 }]);
