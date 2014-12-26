@@ -1,6 +1,20 @@
 angular.module('incremental',[])
-    .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) {
-        var lastUpdate = 0;
+    .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
+		var version = 0.3;
+		
+		var startPlayer = {
+			cashPerClick:1,
+			multiplier: 1,
+			upgrades: [0,
+                        0,
+                        0,
+                        0,
+                        0],
+			currency: new Decimal(0)
+			//version: version
+			};
+		
+		var lastUpdate = 0;
         var upgradeBasePrice = [10,
                                 100,
                                 1000,
@@ -11,34 +25,24 @@ angular.module('incremental',[])
                             0.01,
                             0.1,
                             1];
-        $scope.cashPerClick = 1;
-        
-        $scope.multiplier = 0;
-
-        $scope.upgrades = [0,
-                           0,
-                           0,
-                           0,
-                           0];
-        $scope.currency = new Decimal(0);
         
 		$scope.currencyValue = function() {
-			return $sce.trustAsHtml(prettifyNumber($scope.currency));
+			return $sce.trustAsHtml(prettifyNumber($scope.player.currency));
 		}
 		
         $scope.click = function() {
-            $scope.currency = $scope.currency.plus(($scope.cashPerClick));
+            $scope.player.currency = $scope.player.currency.plus($scope.player.cashPerClick);
         };
         
         $scope.upgradePrice = function(number) {
-            return (upgradeBasePrice[number] * Math.pow(1.2,$scope.upgrades[number])).toFixed();
+            return (upgradeBasePrice[number] * Math.pow(1.2,$scope.player.upgrades[number])).toFixed();
         };
         
         $scope.buyUpgrade = function(number) {
-            if ($scope.currency.comparedTo($scope.upgradePrice(number)) >= 0) {
-                $scope.currency = $scope.currency.minus($scope.upgradePrice(number));
-                $scope.multiplier += upgradePower[number];
-                $scope.upgrades[number]++;
+            if ($scope.player.currency.comparedTo($scope.upgradePrice(number)) >= 0) {
+                $scope.player.currency = $scope.player.currency.minus($scope.upgradePrice(number));
+                $scope.player.multiplier += upgradePower[number];
+                $scope.player.upgrades[number]++;
             }
         };
         
@@ -46,15 +50,15 @@ angular.module('incremental',[])
             var updateTime = new Date().getTime();
             var timeDiff = (Math.min(1000, Math.max(updateTime - lastUpdate,0))) / 1000;
             lastUpdate = updateTime;
-            var updateMultiplier = (1+$scope.multiplier * timeDiff).toFixed(15);
-            $scope.currency = $scope.currency.times(updateMultiplier);
+            var updateMultiplier = (1+($scope.player.multiplier-1) * timeDiff).toFixed(15);
+            $scope.player.currency = $scope.player.currency.times(updateMultiplier);
         };
         
 		function prettifyNumber(number){
-		if(number.comparedTo(Infinity) == 0){
-			return "&infin;";
-		}
-		if(number.comparedTo(1e21) >= 0){
+			if(number.comparedTo(Infinity) == 0){
+				return "&infin;";
+			}
+			if(number.comparedTo(1e21) >= 0){
 				// Very ugly way to extract the mantisa and exponent from an exponential string
 				var exponential = number.toString().split("e");
 				var exponent = new Decimal(exponential[1].split("+")[1]);
@@ -65,6 +69,9 @@ angular.module('incremental',[])
 		};
 		
         $document.ready(function(){
+			if(typeof $scope.player  === 'undefined'){
+				$scope.player = angular.copy(startPlayer);
+			}
             $interval(update,80);
         });
-    }]);
+}]);
