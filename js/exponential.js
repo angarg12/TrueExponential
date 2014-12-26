@@ -6,10 +6,15 @@ angular.module('incremental',[])
 			cashPerClick:1,
 			multiplier: 1,
 			upgrades: [0,
-                        0,
-                        0,
-                        0,
-                        0],
+						0,
+						0,
+						0,
+						0],
+			upgradesPrice: [10,
+							100,
+							1000,
+							10000,
+							100000],
 			currency: new Decimal(0)
 			//version: version
 			};
@@ -35,7 +40,7 @@ angular.module('incremental',[])
         };
         
         $scope.upgradePrice = function(number) {
-            return (upgradeBasePrice[number] * Math.pow(1.2,$scope.player.upgrades[number])).toFixed();
+			return $scope.player.upgradesPrice[number];
         };
         
         $scope.buyUpgrade = function(number) {
@@ -43,6 +48,7 @@ angular.module('incremental',[])
                 $scope.player.currency = $scope.player.currency.minus($scope.upgradePrice(number));
                 $scope.player.multiplier += upgradePower[number];
                 $scope.player.upgrades[number]++;
+				$scope.player.upgradesPrice[number] = (upgradeBasePrice[number] * Math.pow(1.2,$scope.player.upgrades[number])).toFixed();
             }
         };
         
