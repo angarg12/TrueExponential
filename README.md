@@ -17,4 +17,4 @@ I made a little demo showcasing how fast exponential growth is, and after popula
 
 Technology
 -----------
-The game is developed in Javascript (Angular.js) and uses [https://github.com/MikeMcl/decimal.js/](decimal.js) to break free of the 1e308 limit of regular JS numbers. Still, the maximum number provided by decimal.js dwarfs in the scale of exponential growth, and libraries that provided even bigger numbers are always welcome.
+The game is developed in Javascript (Angular.js) and uses [decimal.js](https://github.com/MikeMcl/decimal.js/) to break free of the 1e308 limit of regular JS numbers. Still, the maximum number provided by decimal.js dwarfs in the scale of exponential growth, and libraries that provided even bigger numbers are always welcome.
