@@ -114,11 +114,7 @@ angular.module('incremental',[])
 		}
 		
         function update() {
-            var updateTime = new Date().getTime();
-            var timeDiff = (Math.min(1000, Math.max(updateTime - lastUpdate,0))) / 1000;
-            lastUpdate = updateTime;
-            var updateMultiplier = (1+($scope.player.multiplier-1) * timeDiff).toFixed(15);
-            $scope.player.currency = $scope.player.currency.times(updateMultiplier);
+            $scope.player.currency = $scope.player.currency.times($scope.player.multiplier.toFixed(15));
         };
         
 		function prettifyNumber(number){
@@ -153,7 +149,7 @@ angular.module('incremental',[])
 				$scope.lastSave = "None";
 			}
 			versionControl(false);
-            $interval(update,80);
+            $interval(update,1000);
             $interval($scope.save,60000);
         });
 }]);
