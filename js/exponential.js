@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = 0.5;
+		$scope.version = 0.6;
 		
 		var startPlayer = {
 			cashPerClick:1,
