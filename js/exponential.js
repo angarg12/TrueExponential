@@ -5,31 +5,48 @@ angular.module('incremental',[])
 		var startPlayer = {
 			cashPerClick:1,
 			multiplier: 1,
-			upgrades: [0,
-						0,
-						0,
-						0,
-						0],
-			upgradesPrice: [10,
-							100,
-							10000,
-							100000000,
-							10000000000000000],
+			multiplierUpgradeLevel: [0,
+									0,
+									0,
+									0,
+									0],
+			multiplierUpgradePrice: [10,
+									100,
+									10000,
+									100000000,
+									10000000000000000],
+			clickUpgradeLevel: [0,
+								0,
+								0,
+								0],
+			clickUpgradePrice: [0.001,
+								0.01,
+								0.1,
+								1],
 			currency: new Decimal(0),
 			version: $scope.version
 			};
 		
 		var lastUpdate = 0;
-        var upgradeBasePrice = [10,
-								100,
-								10000,
-								100000000,
-								10000000000000000];
-        var upgradePower = [0.0001,
-                            0.001,
-                            0.01,
-                            0.1,
-                            1];
+        var multiplierUpgradeBasePrice = [10,
+										100,
+										10000,
+										100000000,
+										10000000000000000];
+        $scope.multiplierUpgradePower = [0.0001,
+									0.001,
+									0.01,
+									0.1,
+									1];
+        var clickUpgradeBasePrice = [10,
+									100,
+									10000,
+									100000000,
+									10000000000000000];
+        $scope.clickUpgradePower = [10,
+								1000,
+								100000,
+								10000000];
         
 		$scope.currencyValue = function() {
 			return $sce.trustAsHtml(prettifyNumber($scope.player.currency));
@@ -39,19 +56,25 @@ angular.module('incremental',[])
             $scope.player.currency = $scope.player.currency.plus($scope.player.cashPerClick);
         };
         
-        $scope.upgradePrice = function(number) {
-			return $scope.player.upgradesPrice[number];
-        };
-        
-        $scope.buyUpgrade = function(number) {
-            if ($scope.player.currency.comparedTo($scope.upgradePrice(number)) >= 0) {
-                $scope.player.currency = $scope.player.currency.minus($scope.upgradePrice(number));
-                $scope.player.multiplier += upgradePower[number];
-                $scope.player.upgrades[number]++;
-				$scope.player.upgradesPrice[number] = (upgradeBasePrice[number] * Math.pow(2,Math.pow(1+0.2*(number+1),$scope.player.upgrades[number]))).toFixed();
+        $scope.buyMultiplierUpgrade = function(number) {
+            if ($scope.player.currency.comparedTo($scope.player.multiplierUpgradePrice[number]) >= 0) {
+                $scope.player.currency = $scope.player.currency.minus($scope.player.multiplierUpgradePrice[number]);
+                $scope.player.multiplier += $scope.multiplierUpgradePower[number];
+                $scope.player.multiplierUpgradeLevel[number]++;
+				$scope.player.multiplierUpgradePrice[number] = (multiplierUpgradeBasePrice[number] * 
+					Math.pow(2,Math.pow(1+0.2*(number+1),$scope.player.multiplierUpgradeLevel[number])))
+					.toFixed();
             }
         };
         
+        $scope.buyClickUpgrade = function(number) {
+            if ($scope.player.multiplier >= $scope.player.clickUpgradePrice[number]) {			
+                $scope.player.multiplier -= $scope.player.clickUpgradePrice[number];
+				$scope.player.cashPerClick += $scope.clickUpgradePower[number];
+                $scope.player.clickUpgradeLevel[number]++;
+            }
+        };
+		
 		$scope.save = function save() {
 			localStorage.setItem("playerStored", JSON.stringify($scope.player));
 			var d = new Date();
@@ -118,7 +141,6 @@ angular.module('incremental',[])
 				$scope.player.version = $scope.version;
 			}
 		};
-
 		
         $document.ready(function(){
 			if(localStorage.getItem("playerStored") != null){
