@@ -4,7 +4,7 @@ angular.module('incremental',[])
 		
 		var startPlayer = {
 			cashPerClick:1,
-			multiplier: 1,
+			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [0,
 									0,
 									0,
@@ -59,7 +59,7 @@ angular.module('incremental',[])
         $scope.buyMultiplierUpgrade = function(number) {
             if ($scope.player.currency.comparedTo($scope.player.multiplierUpgradePrice[number]) >= 0) {
                 $scope.player.currency = $scope.player.currency.minus($scope.player.multiplierUpgradePrice[number]);
-                $scope.player.multiplier += $scope.multiplierUpgradePower[number];
+                $scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
                 $scope.player.multiplierUpgradeLevel[number]++;
 				$scope.player.multiplierUpgradePrice[number] = (multiplierUpgradeBasePrice[number] * 
 					Math.pow(2,Math.pow(1+0.2*(number+1),$scope.player.multiplierUpgradeLevel[number])))
@@ -68,8 +68,8 @@ angular.module('incremental',[])
         };
         
         $scope.buyClickUpgrade = function(number) {
-            if ($scope.player.multiplier >= $scope.player.clickUpgradePrice[number]) {			
-                $scope.player.multiplier -= $scope.player.clickUpgradePrice[number];
+            if ($scope.player.multiplier.comparedTo($scope.player.clickUpgradePrice[number])  >= 0) {			
+                $scope.player.multiplier = $scope.player.multiplier.minus($scope.player.clickUpgradePrice[number]);
 				$scope.player.cashPerClick += $scope.clickUpgradePower[number];
                 $scope.player.clickUpgradeLevel[number]++;
             }
@@ -114,7 +114,7 @@ angular.module('incremental',[])
 		}
 		
         function update() {
-            $scope.player.currency = $scope.player.currency.times($scope.player.multiplier.toFixed(15));
+            $scope.player.currency = $scope.player.currency.times($scope.player.multiplier);
         };
         
 		function prettifyNumber(number){
