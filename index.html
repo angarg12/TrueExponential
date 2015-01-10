@@ -19,7 +19,7 @@
 	  <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
 	  <hr>
 		  <button ng-click="click()">Generate cash ${{player.cashPerClick}}</button>
-		  <p>Cash: $<span ng-bind-html="currencyValue()"/></p>    
+		  <p style="font-family:Courier New, Courier, monospace" >Cash: $<span ng-bind-html="currencyValue()"/></p>    
 		  <h3>Multiplier upgrades</h3>
 		  <button ng-click="buyMultiplierUpgrade(0)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[0]) < 0">+{{multiplierUpgradePower[0]}} (cost ${{player.multiplierUpgradePrice[0].toString()}})</button>
 		  <br>
