@@ -10,11 +10,11 @@ angular.module('incremental',[])
 									0,
 									0,
 									0],
-			multiplierUpgradePrice: [10,
-									100,
-									10000,
-									100000000,
-									10000000000000000],
+			multiplierUpgradePrice: [new Decimal(10),
+									new Decimal(100),
+									new Decimal(10000),
+									new Decimal(100000000),
+									new Decimal(10000000000000000)],
 			clickUpgradeLevel: [0,
 								0,
 								0,
@@ -28,21 +28,16 @@ angular.module('incremental',[])
 			};
 		
 		var lastUpdate = 0;
-        var multiplierUpgradeBasePrice = [10,
-										100,
-										10000,
-										100000000,
-										10000000000000000];
+        var multiplierUpgradeBasePrice = [new Decimal(10),
+										new Decimal(100),
+										new Decimal(10000),
+										new Decimal(100000000),
+										new Decimal(10000000000000000)];
         $scope.multiplierUpgradePower = [0.0001,
 									0.001,
 									0.01,
 									0.1,
 									1];
-        var clickUpgradeBasePrice = [10,
-									100,
-									10000,
-									100000000,
-									10000000000000000];
         $scope.clickUpgradePower = [10,
 								1000,
 								100000,
@@ -61,9 +56,10 @@ angular.module('incremental',[])
                 $scope.player.currency = $scope.player.currency.minus($scope.player.multiplierUpgradePrice[number]);
                 $scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
                 $scope.player.multiplierUpgradeLevel[number]++;
-				$scope.player.multiplierUpgradePrice[number] = (multiplierUpgradeBasePrice[number] * 
-					Math.pow(2,Math.pow(1+0.2*(number+1),$scope.player.multiplierUpgradeLevel[number])))
-					.toFixed();
+				// The cost function is of the form 2^1.x^(upgradeLevel), where 1.x depends on the upgrade tier
+				var exponent = Decimal.pow(1+0.2*(number+1),$scope.player.multiplierUpgradeLevel[number]);
+				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
+					times(Decimal.pow(2,exponent));
             }
         };
         

@@ -21,15 +21,22 @@
 		  <button ng-click="click()">Generate cash ${{player.cashPerClick}}</button>
 		  <p>Cash: $<span ng-bind-html="currencyValue()"/></p>    
 		  <h3>Multiplier upgrades</h3>
-		  <button ng-click="buyMultiplierUpgrade(0)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[0]) < 0">+{{multiplierUpgradePower[0]}} (cost ${{player.multiplierUpgradePrice[0]}})</button>
-		  <button ng-click="buyMultiplierUpgrade(1)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[1]) < 0">+{{multiplierUpgradePower[1]}} (cost ${{player.multiplierUpgradePrice[1]}})</button>
-		  <button ng-click="buyMultiplierUpgrade(2)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[2]) < 0">+{{multiplierUpgradePower[2]}} (cost ${{player.multiplierUpgradePrice[2]}})</button>
-		  <button ng-click="buyMultiplierUpgrade(3)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[3]) < 0">+{{multiplierUpgradePower[3]}} (cost ${{player.multiplierUpgradePrice[3]}})</button>
-		  <button ng-click="buyMultiplierUpgrade(4)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[4]) < 0">+{{multiplierUpgradePower[4]}} (cost ${{player.multiplierUpgradePrice[4]}})</button>
+		  <button ng-click="buyMultiplierUpgrade(0)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[0]) < 0">+{{multiplierUpgradePower[0]}} (cost ${{player.multiplierUpgradePrice[0].toString()}})</button>
+		  <br>
+		  <button ng-click="buyMultiplierUpgrade(1)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[1]) < 0">+{{multiplierUpgradePower[1]}} (cost ${{player.multiplierUpgradePrice[1].toString()}})</button>
+		  <br>
+		  <button ng-click="buyMultiplierUpgrade(2)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[2]) < 0">+{{multiplierUpgradePower[2]}} (cost ${{player.multiplierUpgradePrice[2].toString()}})</button>
+		  <br>
+		  <button ng-click="buyMultiplierUpgrade(3)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[3]) < 0">+{{multiplierUpgradePower[3]}} (cost ${{player.multiplierUpgradePrice[3].toString()}})</button>
+		  <br>
+		  <button ng-click="buyMultiplierUpgrade(4)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[4]) < 0">+{{multiplierUpgradePower[4]}} (cost ${{player.multiplierUpgradePrice[4].toString()}})</button>
 		  <h3>Click power upgrades</h3>
 		  <button ng-click="buyClickUpgrade(0)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[0]) < 0">+{{clickUpgradePower[0]}} (cost {{player.clickUpgradePrice[0]}} multiplier)</button>
+		  <br>
 		  <button ng-click="buyClickUpgrade(1)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[1]) < 0">+{{clickUpgradePower[1]}} (cost {{player.clickUpgradePrice[1]}} multiplier)</button>
+		  <br>
 		  <button ng-click="buyClickUpgrade(2)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[2]) < 0">+{{clickUpgradePower[2]}} (cost {{player.clickUpgradePrice[2]}} multiplier)</button>
+		  <br>
 		  <button ng-click="buyClickUpgrade(3)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[3]) < 0">+{{clickUpgradePower[3]}} (cost {{player.clickUpgradePrice[3]}} multiplier)</button>
 	  <hr>
    </div>  
