@@ -53,7 +53,7 @@ angular.module('incremental',[])
         
         $scope.buyMultiplierUpgrade = function(number) {
             if ($scope.player.currency.comparedTo($scope.player.multiplierUpgradePrice[number]) >= 0) {
-                $scope.player.currency = $scope.player.currency.minus($scope.player.multiplierUpgradePrice[number]);
+                $scope.player.currency = $scope.player.currency.div($scope.player.multiplierUpgradePrice[number]);
                 $scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
                 $scope.player.multiplierUpgradeLevel[number]++;
 				// The cost function is of the form 2^1.x^(upgradeLevel), where 1.x depends on the upgrade tier
