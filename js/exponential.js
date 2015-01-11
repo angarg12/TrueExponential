@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = 0.6;
+		$scope.version = 0.7;
 		
 		var startPlayer = {
 			cashPerClick:1,
@@ -27,7 +27,6 @@ angular.module('incremental',[])
 			version: $scope.version
 			};
 		
-		var lastUpdate = 0;
         var multiplierUpgradeBasePrice = [new Decimal(10),
 										new Decimal(100),
 										new Decimal(10000),
@@ -85,7 +84,7 @@ angular.module('incremental',[])
 		$scope.reset = function reset() {
 			var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
 			if(confirmation === true){
-				$scope.player = angular.copy(startPlayer);
+				init();
 				localStorage.removeItem("playerStored");
 			}
 		}
@@ -128,10 +127,24 @@ angular.module('incremental',[])
 		};
 		
 		function versionControl(ifImport){
-			if($scope.player.version < $scope.version || 
-				typeof $scope.player.version == 'undefined'){
+			if($scope.player.versionNum < 0.6){
+				if(ifImport){
+					alert("This save is incompatible with the current version.");
+					return;
+				}
+				alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\nWipe goes with: version " + 0.22);
+				init();
+				localStorage.setItem("playerStored", JSON.stringify($scope.player));
+				return;
+			}
+			if(typeof $scope.player.version == 'undefined'){
+				init();
 				$scope.player.version = $scope.version;
 			}
+		};
+		
+		function init(){
+			$scope.player = angular.copy(startPlayer);
 		};
 		
         $document.ready(function(){
@@ -139,7 +152,7 @@ angular.module('incremental',[])
 				$scope.load();
 			}
 			if(typeof $scope.player  === 'undefined'){
-				$scope.player = angular.copy(startPlayer);
+				init();
 			}
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
