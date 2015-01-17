@@ -3,44 +3,19 @@ angular.module('incremental',[])
 		$scope.version = 0.7;
 		
 		var startPlayer = {
-			cashPerClick:1,
+			cashPerClick: new Decimal(1),
 			multiplier: new Decimal(1),
-			multiplierUpgradeLevel: [0,
-									0,
-									0,
-									0,
-									0],
-			multiplierUpgradePrice: [new Decimal(10),
-									new Decimal(100),
-									new Decimal(10000),
-									new Decimal(100000000),
-									new Decimal(10000000000000000)],
-			clickUpgradeLevel: [0,
-								0,
-								0,
-								0],
-			clickUpgradePrice: [0.001,
-								0.01,
-								0.1,
-								1],
+			multiplierUpgradeLevel: [],
+			multiplierUpgradePrice: [],
+			clickUpgradeLevel: [],
+			clickUpgradePrice: [],
 			currency: new Decimal(0),
 			version: $scope.version
 			};
 		
-        var multiplierUpgradeBasePrice = [new Decimal(10),
-										new Decimal(100),
-										new Decimal(10000),
-										new Decimal(100000000),
-										new Decimal(10000000000000000)];
-        $scope.multiplierUpgradePower = [0.0001,
-									0.001,
-									0.01,
-									0.1,
-									1];
-        $scope.clickUpgradePower = [10,
-								1000,
-								100000,
-								10000000];
+        var multiplierUpgradeBasePrice = [];
+        $scope.multiplierUpgradePower = [];
+        $scope.clickUpgradePower = [];
         
 		$scope.currencyValue = function() {
 			return $sce.trustAsHtml(prettifyNumber($scope.player.currency));
@@ -65,7 +40,7 @@ angular.module('incremental',[])
         $scope.buyClickUpgrade = function(number) {
             if ($scope.player.multiplier.comparedTo($scope.player.clickUpgradePrice[number])  >= 0) {			
                 $scope.player.multiplier = $scope.player.multiplier.minus($scope.player.clickUpgradePrice[number]);
-				$scope.player.cashPerClick += $scope.clickUpgradePower[number];
+				$scope.player.cashPerClick = $scope.player.cashPerClick.plus($scope.clickUpgradePower[number]);
                 $scope.player.clickUpgradeLevel[number]++;
             }
         };
@@ -127,12 +102,12 @@ angular.module('incremental',[])
 		};
 		
 		function versionControl(ifImport){
-			if($scope.player.versionNum < 0.6){
+			if($scope.player.versionNum < 0.7){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
 					return;
 				}
-				alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\nWipe goes with: version " + 0.22);
+				alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\n");
 				init();
 				localStorage.setItem("playerStored", JSON.stringify($scope.player));
 				return;
@@ -143,8 +118,30 @@ angular.module('incremental',[])
 			}
 		};
 		
+		function generatePrestigeVariables(prestigeLevel){
+			$scope.player.multiplierUpgradeLevel = [];
+			$scope.player.multiplierUpgradePrice = [];
+			$scope.player.clickUpgradeLevel = [];
+			$scope.player.clickUpgradePrice = [];
+			multiplierUpgradeBasePrice = [];
+			$scope.multiplierUpgradePower = [];
+			$scope.clickUpgradePower = [];
+			for (i = 0; i < prestigeLevel; i++) { 
+				$scope.player.multiplierUpgradeLevel.push(0);
+				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
+				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
+				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
+				if(i > 0){
+					$scope.player.clickUpgradeLevel.push(0);
+					$scope.player.clickUpgradePrice.push(0.001*Math.pow(10,i-1));
+					$scope.clickUpgradePower.push(new Decimal(10*Decimal.pow(100,i-1)));
+				}
+			}
+		};
+		
 		function init(){
 			$scope.player = angular.copy(startPlayer);
+			generatePrestigeVariables(1);
 		};
 		
         $document.ready(function(){
