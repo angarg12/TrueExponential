@@ -11,7 +11,7 @@ angular.module('incremental',[])
 			clickUpgradeLevel: [],
 			clickUpgradePrice: [],
 			currency: new Decimal(0),
-			prestige: 2,
+			prestige: 1,
 			version: $scope.version
 			};
 		

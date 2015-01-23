@@ -4,69 +4,77 @@
 <script type="text/javascript" src="js/decimal.min.js"></script>
 <link rel="stylesheet" type="text/css" href="styles/main.css">
 <script>
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-58136427-1', 'auto');
-	ga('send', 'pageview');
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-58136427-1', 'auto');
+    ga('send', 'pageview');
 </script>
 <body ng-app="incremental">
- <div ng-controller="IncCtrl">
-  <h1>True exponential</h1>
-  <a href="#game">Game</a> |
-  <a href="#options">Options</a>
-  <div id="game">
-	  <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="currencyValue()"/></span></h2> 
-	  <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>	
-	  <h2>Goal: {{prestigeGoal[player.prestige-1].toString()}}</h2>	
-		<div class="progress-striped" style="margin-bottom:0;width:80%;">
-		<div class="progress-bar" role="progressbar" aria-valuenow="{{player.currency}}" aria-valuemin="0" aria-valuemax="{{prestigeGoal[player.prestige-1]}}" style="width:{{player.currency.div(prestigeGoal[player.prestige-1])*100}}%">
-			{{Math.floor((player.currency/prestigeGoal[player.prestige-1])*100)}}%
-      </div>
-	  </div>	
-	  <hr> 
-		  <button ng-click="click()">Generate cash ${{player.cashPerClick.toString()}}</button>  
-		  {{player.multiplierUpgradeLevel}}<br>
-			{{player.multiplierUpgradePrice}}<br>
-			{{player.clickUpgradeLevel}}<br>
-			{{player.clickUpgradePrice}}<br>
-			{{multiplierUpgradePower}}<br>
-			{{clickUpgradePower}}<br>
-		  <h3>Multiplier upgrades</h3>
-		  <div ng-repeat="upgrade in multiplierUpgradePower">
-		  <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}} (cost ${{player.multiplierUpgradePrice[$index].toString()}})</button>
-		  <br>
-		  </div>
-		  <h3 ng-if="clickUpgradePower.length > 0">Click power upgrades</h3>
-		  <div ng-repeat="upgrade in clickUpgradePower">
-		  <button ng-click="buyClickUpgrade($index)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[$index]) < 0">+{{clickUpgradePower[$index].toString()}} (cost {{player.clickUpgradePrice[$index]}} multiplier)</button>
-		  <br>
-		  </div>
-	  <hr>
-   </div>  
-	<div id="options">
-	  <h2>Options</h2>
-		<table id="optionTable">
-			<tr><td>
-				<button id="reset" ng-click="reset()">Reset Save</button>
-			</td></tr>
-			<tr><td>
-				<button id="save" ng-click="save()">Save</button>
-				<td>Last save time: {{lastSave}}</td>
-			</td></tr>
-			<tr><td>
-				<button id="exportSave" ng-click="exportSave()">Export Save</button>
-				<td id="exportSaveContents" style="display: none">
-				Copy this text:
-				<input id="exportSaveText" type="text" readonly>
-				</td>
-			</td></tr>
-			<tr><td>
-				<button id="importSave" ng-click="importSave()">Import Save</button>
-			</td></tr>
-		</table>
-	</div>
-   <p><small>By angarg12 GPLv2 | Version {{version}} | <a href="changelog.txt" target="_newtab">Changelog</a> | <a href="https://github.com/angarg12/TrueExponential" target="_newtab">Github</a></small></p>
- </div>
+    <div ng-controller="IncCtrl">
+        <h1>True exponential</h1>
+        <a href="#game">Game</a> |
+        <a href="#options">Options</a>
+        <div id="game">
+            <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="currencyValue()"/></span></h2>
+            <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
+            <h2>Goal: {{prestigeGoal[player.prestige-1].toString()}}</h2>
+            <div class="progress-striped" style="margin-bottom:0;width:80%;">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{{player.currency}}" aria-valuemin="0" aria-valuemax="{{prestigeGoal[player.prestige-1]}}" style="width:{{player.currency.div(prestigeGoal[player.prestige-1])*100}}%">
+                    {{Math.floor((player.currency/prestigeGoal[player.prestige-1])*1000)/10}}%
+                </div>
+            </div>
+            <hr>
+            <button ng-click="click()">Generate cash ${{player.cashPerClick.toString()}}</button>  
+            {{player.multiplierUpgradeLevel}}<br>
+            {{player.multiplierUpgradePrice}}<br>
+            {{player.clickUpgradeLevel}}<br>
+            {{player.clickUpgradePrice}}<br>
+            {{multiplierUpgradePower}}<br>
+            {{clickUpgradePower}}<br>
+            <h3>Multiplier upgrades</h3>
+            <div ng-repeat="upgrade in multiplierUpgradePower">
+                <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}} (cost ${{player.multiplierUpgradePrice[$index].toString()}})</button>
+                <br>
+            </div>
+            <h3 ng-if="clickUpgradePower.length > 0">Click power upgrades</h3>
+            <div ng-repeat="upgrade in clickUpgradePower">
+                <button ng-click="buyClickUpgrade($index)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[$index]) < 0">+{{clickUpgradePower[$index].toString()}} (cost {{player.clickUpgradePrice[$index]}} multiplier)</button>
+                <br>
+            </div>
+            <hr>
+        </div>
+        <div id="options">
+            <h2>Options</h2>
+            <table id="optionTable">
+                <tr>
+                    <td>
+                        <button id="reset" ng-click="reset()">Reset Save</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="save" ng-click="save()">Save</button>
+                    <td>Last save time: {{lastSave}}</td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="exportSave" ng-click="exportSave()">Export Save</button>
+                    <td id="exportSaveContents" style="display: none">
+                        Copy this text:
+                        <input id="exportSaveText" type="text" readonly>
+                    </td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="importSave" ng-click="importSave()">Import Save</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p><small>By angarg12 GPLv2 | Version {{version}} | <a href="changelog.txt" target="_newtab">Changelog</a> | <a href="https://github.com/angarg12/TrueExponential" target="_newtab">Github</a></small></p>
+    </div>
 </body>
