@@ -145,7 +145,7 @@ angular.module('incremental',[])
 		
 		function init(){
 			$scope.player = angular.copy(startPlayer);
-			generatePrestigeVariables(1);
+			generatePrestigeVariables($scope.player.prestige);
 		};
 		
         $document.ready(function(){

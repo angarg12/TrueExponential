@@ -20,7 +20,7 @@
 	  <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="currencyValue()"/></span></h2> 
 	  <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>	
 	  <h2>Goal: {{prestigeGoal[0].toString()}}</h2>	
-	  <div class="progress" style="margin-bottom:0;width:80%;">
+		<div class="progress-striped" style="margin-bottom:0;width:80%;">
 		<div class="progress-bar" role="progressbar" aria-valuenow="{{player.currency}}" aria-valuemin="0" aria-valuemax="1e8" style="width:{{player.currency/1e8*100}}%">
 			{{Math.floor((player.currency/1e8)*100)}}%
       </div>
