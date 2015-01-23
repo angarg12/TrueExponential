@@ -11,14 +11,14 @@ angular.module('incremental',[])
 			clickUpgradeLevel: [],
 			clickUpgradePrice: [],
 			currency: new Decimal(0),
-			prestige: 1,
+			prestige: 2,
 			version: $scope.version
 			};
 		
         var multiplierUpgradeBasePrice = [];
         $scope.multiplierUpgradePower = [];
         $scope.clickUpgradePower = [];
-        $scope.prestigeGoal = [new Decimal("1e8"),
+        $scope.prestigeGoal = [new Decimal("1e4"),
 							new Decimal("1e16")];
 		
 		$scope.currencyValue = function() {
