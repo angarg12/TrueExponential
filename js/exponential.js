@@ -72,6 +72,7 @@ angular.module('incremental',[])
 			if(confirmation === true){
 				init();
 				generatePrestigePlayer($scope.player.prestige);
+				generatePrestigeUpgrades($scope.player.prestige);
 				localStorage.removeItem("playerStored");
 			}
 		}
