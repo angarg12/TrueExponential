@@ -4,7 +4,7 @@ angular.module('incremental',[])
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
-			cashPerClick: new Decimal(1),
+			cashPerClick: new Decimal(1000),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
@@ -20,6 +20,7 @@ angular.module('incremental',[])
         $scope.clickUpgradePower = [];
         $scope.prestigeGoal = [new Decimal("1e4"),
 							new Decimal("1e16")];
+		$scope.sprintFinished = false;
 		
 		$scope.currencyValue = function() {
 			return $sce.trustAsHtml(prettifyNumber($scope.player.currency));
@@ -148,13 +149,13 @@ angular.module('incremental',[])
 		function adjustCurrency(currency){
 			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige-1]) > 0){
 				currency = $scope.prestigeGoal[$scope.player.prestige-1];
+				$scope.sprintFinished = true;
 			}
 			return currency;
 		}
 		
 		function init(){
 			$scope.player = angular.copy(startPlayer);
-			generatePrestigeVariables($scope.player.prestige);
 		};
 		
         $document.ready(function(){
@@ -168,6 +169,7 @@ angular.module('incremental',[])
 				$scope.lastSave = "None";
 			}
 			versionControl(false);
+			generatePrestigeVariables($scope.player.prestige);
             $interval(update,1000);
             $interval($scope.save,60000);
         });
