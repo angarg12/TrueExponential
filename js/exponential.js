@@ -60,6 +60,8 @@ angular.module('incremental',[])
 		$scope.load = function load() {
 			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
 			$scope.player.currency = new Decimal($scope.player.currency);
+			$scope.player.multiplier = new Decimal($scope.player.multiplier);
+			$scope.player.cashPerClick = new Decimal($scope.player.cashPerClick);
 		}
 		
 		$scope.reset = function reset() {
