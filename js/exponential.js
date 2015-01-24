@@ -4,7 +4,7 @@ angular.module('incremental',[])
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
-			cashPerClick: new Decimal(1),
+			cashPerClick: new Decimal(1000),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
@@ -95,6 +95,16 @@ angular.module('incremental',[])
 				save();
 			}
 		}
+		
+		$scope.prestige = function prestige(){
+			$scope.player.prestige += 1;
+			generatePrestigePlayer($scope.player.prestige);
+			generatePrestigeUpgrades($scope.player.prestige);
+			$scope.player.cashPerClick = new Decimal(1000);
+			$scope.player.multiplier = new Decimal(1);
+			$scope.player.currency = new Decimal(0);
+			$scope.sprintFinished = false;
+		};
 		
         function update() {
             tempCurrency = $scope.player.currency.times($scope.player.multiplier);
