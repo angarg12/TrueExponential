@@ -4,7 +4,7 @@ angular.module('incremental',[])
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
-			cashPerClick: new Decimal(1000),
+			cashPerClick: new Decimal(1),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
