@@ -62,12 +62,16 @@ angular.module('incremental',[])
 			$scope.player.currency = new Decimal($scope.player.currency);
 			$scope.player.multiplier = new Decimal($scope.player.multiplier);
 			$scope.player.cashPerClick = new Decimal($scope.player.cashPerClick);
+			for (i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
+				$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
+			}
 		}
 		
 		$scope.reset = function reset() {
 			var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
 			if(confirmation === true){
 				init();
+				generatePrestigePlayer($scope.player.prestige);
 				localStorage.removeItem("playerStored");
 			}
 		}
@@ -127,23 +131,30 @@ angular.module('incremental',[])
 			}
 		};
 		
-		function generatePrestigeVariables(prestigeLevel){
-			$scope.player.multiplierUpgradeLevel = [];
-			$scope.player.multiplierUpgradePrice = [];
-			$scope.player.clickUpgradeLevel = [];
-			$scope.player.clickUpgradePrice = [];
+		function generatePrestigeUpgrades(prestigeLevel){
 			multiplierUpgradeBasePrice = [];
 			$scope.multiplierUpgradePower = [];
 			$scope.clickUpgradePower = [];
 			for (i = 0; i < prestigeLevel; i++) { 
-				$scope.player.multiplierUpgradeLevel.push(0);
-				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
 				if(i > 0){
+					$scope.clickUpgradePower.push(new Decimal(10*Decimal.pow(100,i-1)));
+				}
+			}
+		};
+		
+		function generatePrestigePlayer(prestigeLevel){
+			$scope.player.multiplierUpgradeLevel = [];
+			$scope.player.multiplierUpgradePrice = [];
+			$scope.player.clickUpgradeLevel = [];
+			$scope.player.clickUpgradePrice = [];
+			for (i = 0; i < prestigeLevel; i++) { 
+				$scope.player.multiplierUpgradeLevel.push(0);
+				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
+				if(i > 0){
 					$scope.player.clickUpgradeLevel.push(0);
 					$scope.player.clickUpgradePrice.push(0.001*Math.pow(10,i-1));
-					$scope.clickUpgradePower.push(new Decimal(10*Decimal.pow(100,i-1)));
 				}
 			}
 		};
@@ -166,12 +177,13 @@ angular.module('incremental',[])
 			}
 			if(typeof $scope.player  === 'undefined'){
 				init();
+				generatePrestigePlayer($scope.player.prestige);
 			}
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
 			}
 			versionControl(false);
-			generatePrestigeVariables($scope.player.prestige);
+			generatePrestigeUpgrades($scope.player.prestige);
             $interval(update,1000);
             $interval($scope.save,60000);
         });
