@@ -26,7 +26,8 @@ angular.module('incremental',[])
 		}
 		
         $scope.click = function() {
-            $scope.player.currency = $scope.player.currency.plus($scope.player.cashPerClick);
+			tempCurrency = $scope.player.currency.plus($scope.player.cashPerClick);
+			$scope.player.currency = adjustCurrency(tempCurrency);
         };
         
         $scope.buyMultiplierUpgrade = function(number) {
@@ -88,7 +89,8 @@ angular.module('incremental',[])
 		}
 		
         function update() {
-            $scope.player.currency = $scope.player.currency.times($scope.player.multiplier);
+            tempCurrency = $scope.player.currency.times($scope.player.multiplier);
+			$scope.player.currency = adjustCurrency(tempCurrency);
         };
         
 		function prettifyNumber(number){
@@ -142,6 +144,13 @@ angular.module('incremental',[])
 				}
 			}
 		};
+		
+		function adjustCurrency(currency){
+			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige-1]) > 0){
+				currency = $scope.prestigeGoal[$scope.player.prestige-1];
+			}
+			return currency;
+		}
 		
 		function init(){
 			$scope.player = angular.copy(startPlayer);
