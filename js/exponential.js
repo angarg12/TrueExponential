@@ -4,7 +4,7 @@ angular.module('incremental',[])
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
-			cashPerClick: new Decimal(1000),
+			cashPerClick: new Decimal(1),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
@@ -12,7 +12,8 @@ angular.module('incremental',[])
 			clickUpgradePrice: [],
 			currency: new Decimal(0),
 			prestige: 1,
-			version: $scope.version
+			version: $scope.version,
+			preferences: {logscale: $scope.logscale}
 			};
 		
         var multiplierUpgradeBasePrice = [];
@@ -65,6 +66,7 @@ angular.module('incremental',[])
 			for (i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 				$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 			}
+			$scope.loadPreferences();
 		}
 		
 		$scope.reset = function reset() {
@@ -75,6 +77,7 @@ angular.module('incremental',[])
 				generatePrestigeUpgrades($scope.player.prestige);
 				localStorage.removeItem("playerStored");
 			}
+			$scope.loadPreferences();
 		}
 		
 		$scope.exportSave = function exportSave() {
@@ -93,8 +96,19 @@ angular.module('incremental',[])
 				$scope.player.currency = new Decimal($scope.player.currency);
 				versionControl(true);
 				save();
+				$scope.loadPreferences();
 			}
 		}
+		
+		$scope.updatePreferences = function updatePreferences(preference){
+			$scope.player.preferences[preference] = $scope[preference];
+		};
+		
+		$scope.loadPreferences = function loadPreferences(){
+			for(preference in $scope.player.preferences){
+				$scope[preference] = $scope.player.preferences[preference];
+			}
+		};
 		
 		$scope.prestige = function prestige(){
 			$scope.player.prestige += 1;

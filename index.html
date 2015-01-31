@@ -20,13 +20,11 @@
             <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="currencyValue()"/></span></h2>
             <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
             <h2>Goal<sup ng-if="player.prestige > 1">{{player.prestige-1}}</sup>: {{prestigeGoal[player.prestige-1].toString()}}</h2>
-            <div class="progress-striped" style="margin-bottom:0;width:80%;">
-                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[player.prestige-1])*100}}%">
+            <div class="progress-striped" style="margin-bottom:0;width:80%;" >
+                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[player.prestige-1])*100}}%" ng-if="!logscale">
                     {{Math.max(Math.floor((player.currency.div(prestigeGoal[player.prestige-1]))*1000)/10,0)}}%
                 </div>
-            </div>
-            <div class="progress-striped" style="margin-bottom:0;width:80%;">
-                <div class="progress-bar-warning" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.ln().div(prestigeGoal[player.prestige-1].ln())*100}}%">
+                <div class="progress-bar-log" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.ln().div(prestigeGoal[player.prestige-1].ln())*100}}%" ng-if="logscale">
                     {{Math.max(Math.floor((player.currency.ln().div(prestigeGoal[player.prestige-1].ln()))*1000)/10,0)}}%
                 </div>
             </div>				 
@@ -75,6 +73,11 @@
                 <tr>
                     <td>
                         <button id="importSave" ng-click="importSave()">Import Save</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Use log scale for progress bar <input type="checkbox" ng-model="logscale" ng-click="updatePreferences('logscale')">
                     </td>
                 </tr>
             </table>

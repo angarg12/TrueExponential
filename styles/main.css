@@ -7,7 +7,7 @@
 	box-shadow:inset 0 1px 2px rgba(0,0,0,.1)
 }
 
-.progress-bar, .progress-bar-success, .progress-bar-info, .progress-bar-warning, .progress-bar-danger{
+.progress-bar, .progress-bar-success, .progress-bar-log, .progress-bar-warning, .progress-bar-danger{
 	float:left;
 	width:0;
 	height:100%;
@@ -23,7 +23,7 @@
 	text-shadow: 1px 1px black, -1px 1px black, 1px -1px black, -1px -1px black;
 }
 
-.progress-striped .progress-bar, .progress-striped .progress-bar-success, .progress-striped .progress-bar-info, .progress-striped .progress-bar-warning, .progress-striped .progress-bar-danger{
+.progress-striped .progress-bar, .progress-striped .progress-bar-success, .progress-striped .progress-bar-log, .progress-striped .progress-bar-warning, .progress-striped .progress-bar-danger{
 	background-image:linear-gradient(45deg,rgba(255,255,255,.15)25%,transparent 25%,transparent 50%,rgba(255,255,255,.15)50%,rgba(255,255,255,.15)75%,transparent 75%,transparent);
 	background-size:40px 40px
 }
@@ -32,7 +32,7 @@
 	background-color:#5cb85c
 }
 
-.progress-bar-info{
+.progress-bar-log{
 	background-color:#5bc0de
 }
 
