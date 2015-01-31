@@ -38,7 +38,9 @@ angular.module('incremental',[])
                 $scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
                 $scope.player.multiplierUpgradeLevel[number]++;
 				// The cost function is of the form 2^1.x^(upgradeLevel), where 1.x depends on the upgrade tier
-				var exponent = Decimal.pow(1+0.2*(number+1),$scope.player.multiplierUpgradeLevel[number]);
+				var firstTerm = (1+0.2*(number+1)).toPrecision(15);
+				var secondTerm = $scope.player.multiplierUpgradeLevel[number];
+				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
             }
