@@ -11,7 +11,7 @@ angular.module('incremental',[])
 			clickUpgradeLevel: [],
 			clickUpgradePrice: [],
 			currency: new Decimal(0),
-			prestige: 1,
+			prestige: 0,
 			version: $scope.version,
 			preferences: {logscale: $scope.logscale}
 			};
@@ -160,7 +160,7 @@ angular.module('incremental',[])
 			multiplierUpgradeBasePrice = [];
 			$scope.multiplierUpgradePower = [];
 			$scope.clickUpgradePower = [];
-			for (i = 0; i < prestigeLevel; i++) { 
+			for (i = 0; i <= prestigeLevel; i++) { 
 				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
 				if(i > 0){
@@ -174,7 +174,7 @@ angular.module('incremental',[])
 			$scope.player.multiplierUpgradePrice = [];
 			$scope.player.clickUpgradeLevel = [];
 			$scope.player.clickUpgradePrice = [];
-			for (i = 0; i < prestigeLevel; i++) { 
+			for (i = 0; i <= prestigeLevel; i++) { 
 				$scope.player.multiplierUpgradeLevel.push(0);
 				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				if(i > 0){
@@ -185,8 +185,8 @@ angular.module('incremental',[])
 		};
 		
 		function adjustCurrency(currency){
-			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige-1]) > 0){
-				currency = $scope.prestigeGoal[$scope.player.prestige-1];
+			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige]) > 0){
+				currency = $scope.prestigeGoal[$scope.player.prestige];
 				$scope.sprintFinished = true;
 			}
 			return currency;
