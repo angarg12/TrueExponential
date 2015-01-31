@@ -13,6 +13,7 @@ angular.module('incremental',[])
 			currency: new Decimal(0),
 			prestige: 0,
 			version: $scope.version,
+			sprintFinished: false,
 			preferences: {logscale: $scope.logscale}
 			};
 		
@@ -21,7 +22,6 @@ angular.module('incremental',[])
         $scope.clickUpgradePower = [];
         $scope.prestigeGoal = [new Decimal("1e4"),
 							new Decimal("1e16")];
-		$scope.sprintFinished = false;
 		
 		$scope.currencyValue = function() {
 			return $sce.trustAsHtml(prettifyNumber($scope.player.currency));
@@ -111,13 +111,22 @@ angular.module('incremental',[])
 		};
 		
 		$scope.prestige = function prestige(){
-			$scope.player.prestige += 1;
+			// Save the values of the player that persist between prestiges
+			newPrestige = $scope.player.prestige+1;
+			preferences = $scope.player.preferences;
+			version = $scope.player.version;
+			
+			// Reset the player
+			init();
+			alert(newPrestige);
+			// Restore the values
+			$scope.player.prestige = newPrestige;
+			$scope.player.preferences = preferences;
+			$scope.player.version = version;
+			
+			// Generate the prestige values
 			generatePrestigePlayer($scope.player.prestige);
-			generatePrestigeUpgrades($scope.player.prestige);
-			$scope.player.cashPerClick = new Decimal(1);
-			$scope.player.multiplier = new Decimal(10);
-			$scope.player.currency = new Decimal(0);
-			$scope.sprintFinished = false;
+			generatePrestigeUpgrades($scope.player.prestige);			
 		};
 		
         function update() {
@@ -187,7 +196,7 @@ angular.module('incremental',[])
 		function adjustCurrency(currency){
 			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige]) > 0){
 				currency = $scope.prestigeGoal[$scope.player.prestige];
-				$scope.sprintFinished = true;
+				$scope.player.sprintFinished = true;
 			}
 			return currency;
 		}
