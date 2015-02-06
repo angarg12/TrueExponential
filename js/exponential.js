@@ -5,7 +5,7 @@ angular.module('incremental',[])
 		
 		var startPlayer = {
 			cashPerClick: new Decimal(1),
-			multiplier: new Decimal(10),
+			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			clickUpgradeLevel: [],
@@ -20,12 +20,12 @@ angular.module('incremental',[])
         var multiplierUpgradeBasePrice = [];
         $scope.multiplierUpgradePower = [];
         $scope.clickUpgradePower = [];
-        $scope.prestigeGoal = [new Decimal("1e4"),
+        $scope.prestigeGoal = [new Decimal("1e400"),
 							new Decimal("1e16")];
-		
-		$scope.currencyValue = function() {
-			return $sce.trustAsHtml(prettifyNumber($scope.player.currency));
-		}
+
+		$scope.trustedPrettifyNumber = function(value) {
+			return $sce.trustAsHtml(prettifyNumber(value));
+		};
 		
         $scope.click = function() {
 			tempCurrency = $scope.player.currency.plus($scope.player.cashPerClick);

@@ -17,9 +17,9 @@
         <a href="#game">Game</a> |
         <a href="#options">Options</a>
         <div id="game">
-            <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="currencyValue()"/></span></h2>
+            <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="trustedPrettifyNumber(player.currency)"/></span></h2>
             <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
-            <h2>Goal<sup ng-if="player.prestige > 0">{{player.prestige}}</sup>: {{prestigeGoal[player.prestige].toString()}}</h2>
+            <h2>Goal<sup ng-if="player.prestige > 0">{{player.prestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[player.prestige])"/></h2>
             <div class="progress-striped" style="margin-bottom:0;width:80%;">
 				<div ng-if="!player.sprintFinished">
 					<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[player.prestige])*100}}%" ng-if="!logscale">
@@ -39,7 +39,7 @@
             <button ng-click="click()">Generate cash ${{player.cashPerClick.toString()}}</button>  
             <h3>Multiplier upgrades</h3>
             <div ng-repeat="upgrade in multiplierUpgradePower">
-                <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}}</button>&nbsp;${{player.multiplierUpgradePrice[$index].toString()}}
+                <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}}</button>&nbsp;$<span ng-bind-html="trustedPrettifyNumber(player.multiplierUpgradePrice[$index])"/>
                 <br>
             </div>
             <h3 ng-if="clickUpgradePower.length > 0">Click power upgrades</h3>
