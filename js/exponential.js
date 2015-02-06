@@ -20,8 +20,18 @@ angular.module('incremental',[])
         var multiplierUpgradeBasePrice = [];
         $scope.multiplierUpgradePower = [];
         $scope.clickUpgradePower = [];
-        $scope.prestigeGoal = [new Decimal("1e400"),
-							new Decimal("1e16")];
+        $scope.prestigeGoal = [new Decimal("1e4"),
+							new Decimal("1e6"),
+							new Decimal("1e16"),
+							new Decimal("1e200"),
+							new Decimal("1e1250"),
+							new Decimal("1e2500"),
+							new Decimal("1e5000"),
+							new Decimal("1e12500"),
+							new Decimal("1e25000"),
+							new Decimal("1e50000"),
+							new Decimal("1e100000"),
+							new Decimal("1e9000000000000000")];
 
 		$scope.trustedPrettifyNumber = function(value) {
 			return $sce.trustAsHtml(prettifyNumber(value));
