@@ -132,7 +132,7 @@ angular.module('incremental',[])
 			
 			// Reset the player
 			init();
-			alert(newPrestige);
+			
 			// Restore the values
 			$scope.player.prestige = newPrestige;
 			$scope.player.preferences = preferences;
