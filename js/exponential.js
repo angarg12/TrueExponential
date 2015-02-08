@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = '0.8';
+		$scope.version = '0.8.1';
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
