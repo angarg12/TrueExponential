@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = 0.8;
+		$scope.version = '0.8';
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
@@ -81,8 +81,10 @@ angular.module('incremental',[])
 			$scope.loadPreferences();
 		}
 		
-		$scope.reset = function reset() {
-			var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
+		$scope.reset = function reset(ask) {
+			if(ask){
+				var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
+			}
 			if(confirmation === true){
 				init();
 				generatePrestigePlayer($scope.player.prestige);
@@ -161,13 +163,14 @@ angular.module('incremental',[])
 		};
 		
 		function versionControl(ifImport){
-			if($scope.player.versionNum < 0.7){
+			versionComparison = versionCompare($scope.player.version,'0.8');
+			if(versionComparison == -1 || versionComparison == false){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
 					return;
 				}
 				alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\n");
-				init();
+				$scope.reset(false);
 				localStorage.setItem("playerStored", JSON.stringify($scope.player));
 				return;
 			}
@@ -177,6 +180,47 @@ angular.module('incremental',[])
 			}
 		};
 		
+		/**
+		 * Simply compares two string version values.
+		 * 
+		 * Example:
+		 * versionCompare('1.1', '1.2') => -1
+		 * versionCompare('1.1', '1.1') =>  0
+		 * versionCompare('1.2', '1.1') =>  1
+		 * versionCompare('2.23.3', '2.22.3') => 1
+		 * 
+		 * Returns:
+		 * -1 = left is LOWER than right
+		 *  0 = they are equal
+		 *  1 = left is GREATER = right is LOWER
+		 *  And FALSE if one of input versions are not valid
+		 *
+		 * @function
+		 * @param {String} left  Version #1
+		 * @param {String} right Version #2
+		 * @return {Integer|Boolean}
+		 * @author Alexey Bass (albass)
+		 * @since 2011-07-14
+		 */
+		versionCompare = function(left, right) {
+			if (typeof left + typeof right != 'stringstring')
+				return false;
+			
+			var a = left.split('.')
+			,   b = right.split('.')
+			,   i = 0, len = Math.max(a.length, b.length);
+				
+			for (; i < len; i++) {
+				if ((a[i] && !b[i] && parseInt(a[i]) > 0) || (parseInt(a[i]) > parseInt(b[i]))) {
+					return 1;
+				} else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
+					return -1;
+				}
+			}
+			
+			return 0;
+		};
+
 		function generatePrestigeUpgrades(prestigeLevel){
 			multiplierUpgradeBasePrice = [];
 			$scope.multiplierUpgradePower = [];
