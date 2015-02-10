@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = '0.8.1';
+		$scope.version = '0.8.2';
 		$scope.Math = window.Math;
 		
 		var startPlayer = {
@@ -82,9 +82,11 @@ angular.module('incremental',[])
 		}
 		
 		$scope.reset = function reset(ask) {
+			var confirmation = true;
 			if(ask){
 				var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
 			}
+			
 			if(confirmation === true){
 				init();
 				generatePrestigePlayer($scope.player.prestige);
@@ -172,6 +174,7 @@ angular.module('incremental',[])
 				alert("Your save has been wiped as part of an update. Sorry for the inconvenience.\n");
 				$scope.reset(false);
 				localStorage.setItem("playerStored", JSON.stringify($scope.player));
+				
 				return;
 			}
 			if(typeof $scope.player.version == 'undefined'){
