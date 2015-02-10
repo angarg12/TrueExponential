@@ -151,6 +151,10 @@ angular.module('incremental',[])
         };
         
 		function prettifyNumber(number){
+			if(typeof number == 'undefined'){
+				return;
+			}
+				
 			if(number.comparedTo(Infinity) == 0){
 				return "&infin;";
 			}
