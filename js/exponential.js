@@ -5,13 +5,13 @@ angular.module('incremental',[])
 		
 		var startPlayer = {
 			cashPerClick: new Decimal(1),
-			multiplier: new Decimal(1),
+			multiplier: new Decimal(2),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			clickUpgradeLevel: [],
 			clickUpgradePrice: [],
 			currency: new Decimal(0),
-			prestige: 0,
+			maxPrestige: 0,
 			version: $scope.version,
 			sprintFinished: false,
 			sprintTimes: [],
@@ -33,6 +33,9 @@ angular.module('incremental',[])
 							new Decimal("1e50000"),
 							new Decimal("1e100000"),
 							new Decimal("1e9000000000000000")];
+		$scope.currentPrestige = 0;
+		var timer;
+		var timerSeconds = 0;
 
 		$scope.trustedPrettifyNumber = function(value) {
 			return $sce.trustAsHtml(prettifyNumber(value));
@@ -75,7 +78,7 @@ angular.module('incremental',[])
 		$scope.load = function load() {
 			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
 			seconds = localStorage.getItem("timerSeconds");
-			alert(seconds);
+
 			timerSet(seconds);
 			$scope.player.currency = new Decimal($scope.player.currency);
 			$scope.player.multiplier = new Decimal($scope.player.multiplier);
@@ -96,9 +99,10 @@ angular.module('incremental',[])
 				init();
 				timerReset();
 				timerStart();
-				generatePrestigePlayer($scope.player.prestige);
-				generatePrestigeUpgrades($scope.player.prestige);
+				generatePrestigePlayer($scope.player.maxPrestige);
+				generatePrestigeUpgrades($scope.player.maxPrestige);
 				localStorage.removeItem("playerStored");
+				$scope.currentPrestige = 0;
 			}
 			$scope.loadPreferences();
 		}
@@ -115,7 +119,7 @@ angular.module('incremental',[])
 		
 		$scope.prestige = function prestige(){
 			// Save the values of the player that persist between prestiges
-			newPrestige = $scope.player.prestige+1;
+			newPrestige = $scope.player.maxPrestige+1;
 			preferences = $scope.player.preferences;
 			version = $scope.player.version;
 			sprintTimes = $scope.player.sprintTimes;
@@ -128,14 +132,15 @@ angular.module('incremental',[])
 			timerStart();
 			
 			// Restore the values
-			$scope.player.prestige = newPrestige;
+			$scope.player.maxPrestige = newPrestige;
 			$scope.player.preferences = preferences;
 			$scope.player.version = version;
 			$scope.player.sprintTimes = sprintTimes;
 			
 			// Generate the prestige values
-			generatePrestigePlayer($scope.player.prestige);
-			generatePrestigeUpgrades($scope.player.prestige);			
+			generatePrestigePlayer($scope.player.maxPrestige);
+			generatePrestigeUpgrades($scope.player.maxPrestige);	
+			$scope.currentPrestige++;
 		};
 		
         function update() {
@@ -250,13 +255,19 @@ angular.module('incremental',[])
 		};
 		
 		function adjustCurrency(currency){
-			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige]) >= 0){
+			if(currency.comparedTo($scope.prestigeGoal[$scope.player.maxPrestige]) >= 0){
 				if($scope.player.sprintFinished == false){
 					$scope.player.sprintFinished = true;
 					timerStop();
-					$scope.player.sprintTimes.push(timerSeconds);
+					if($scope.player.sprintTimes.length < $scope.currentPrestige){
+						throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
+					}else if($scope.player.sprintTimes.length == $scope.currentPrestige){
+						$scope.player.sprintTimes.push(timerSeconds);
+					}else if(timerSeconds < $scope.player.sprintTimes[$scope.currentPrestige]){
+						$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
+					}
 				}
-				currency = $scope.prestigeGoal[$scope.player.prestige];
+				currency = $scope.prestigeGoal[$scope.player.maxPrestige];
 			}
 			return currency;
 		}
@@ -271,24 +282,20 @@ angular.module('incremental',[])
 			}
 			if(typeof $scope.player  === 'undefined'){
 				init();
-				generatePrestigePlayer($scope.player.prestige);
+				generatePrestigePlayer($scope.player.maxPrestige);
 			}
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
 			}
 			versionControl(false);
-			generatePrestigeUpgrades($scope.player.prestige);
+			generatePrestigeUpgrades($scope.player.maxPrestige);
             $interval(update,1000);
             $interval($scope.save,60000);
 			timerStart();
         });
-		
-		var timer;
-		var timerSeconds = 0;
 			
 		function timerSet(seconds){
 			timerSeconds = seconds;
-			alert($scope.player.sprintFinished);
 			if($scope.player.sprintFinished == true){
 				timerStop();
 			}

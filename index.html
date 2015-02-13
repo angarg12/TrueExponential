@@ -21,14 +21,14 @@
             <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
             <h2>Time: {{getSprintTime()}}</h2>
             <h2>{{player.sprintTimes}}</h2>
-            <h2>Goal<sup ng-if="player.prestige > 0">{{player.prestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[player.prestige])"/></h2>
+            <h2>Goal<sup ng-if="currentPrestige > 0">{{currentPrestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"/></h2>
             <div class="progress-striped" style="margin-bottom:0;width:80%;">
 				<div ng-if="!player.sprintFinished">
-					<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[player.prestige])*100}}%" ng-if="!logscale">
-						{{Math.max(Math.floor((player.currency.div(prestigeGoal[player.prestige]))*1000)/10,0)}}%
+					<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[currentPrestige])*100}}%" ng-if="!logscale">
+						{{Math.max(Math.floor((player.currency.div(prestigeGoal[currentPrestige]))*1000)/10,0)}}%
 					</div>
-					<div class="progress-bar-log" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.ln().div(prestigeGoal[player.prestige].ln())*100}}%" ng-if="logscale">
-						{{Math.max(Math.floor((player.currency.ln().div(prestigeGoal[player.prestige].ln()))*1000)/10,0)}}%
+					<div class="progress-bar-log" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.ln().div(prestigeGoal[currentPrestige].ln())*100}}%" ng-if="logscale">
+						{{Math.max(Math.floor((player.currency.ln().div(prestigeGoal[currentPrestige].ln()))*1000)/10,0)}}%
 					</div>
 				</div>
 				<div ng-if="player.sprintFinished">
