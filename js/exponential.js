@@ -5,7 +5,7 @@ angular.module('incremental',[])
 		
 		var startPlayer = {
 			cashPerClick: new Decimal(1),
-			multiplier: new Decimal(1),
+			multiplier: new Decimal(2),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			clickUpgradeLevel: [],
@@ -14,6 +14,7 @@ angular.module('incremental',[])
 			prestige: 0,
 			version: $scope.version,
 			sprintFinished: false,
+			sprintTimes: [],
 			preferences: {logscale: $scope.logscale}
 			};
 		
@@ -66,12 +67,16 @@ angular.module('incremental',[])
 		
 		$scope.save = function save() {
 			localStorage.setItem("playerStored", JSON.stringify($scope.player));
+			localStorage.setItem("timerSeconds", timerSeconds);
 			var d = new Date();
 			$scope.lastSave = d.toLocaleTimeString();
 		}
 		
 		$scope.load = function load() {
 			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
+			seconds = localStorage.getItem("timerSeconds");
+			alert(seconds);
+			timerSet(seconds);
 			$scope.player.currency = new Decimal($scope.player.currency);
 			$scope.player.multiplier = new Decimal($scope.player.multiplier);
 			$scope.player.cashPerClick = new Decimal($scope.player.cashPerClick);
@@ -89,13 +94,15 @@ angular.module('incremental',[])
 			
 			if(confirmation === true){
 				init();
+				timerReset();
+				timerStart();
 				generatePrestigePlayer($scope.player.prestige);
 				generatePrestigeUpgrades($scope.player.prestige);
 				localStorage.removeItem("playerStored");
 			}
 			$scope.loadPreferences();
 		}
-		
+		ajustar import y export
 		$scope.exportSave = function exportSave() {
 			var exportText = btoa(JSON.stringify($scope.player));
 			
@@ -131,14 +138,20 @@ angular.module('incremental',[])
 			newPrestige = $scope.player.prestige+1;
 			preferences = $scope.player.preferences;
 			version = $scope.player.version;
+			sprintTimes = $scope.player.sprintTimes;
 			
 			// Reset the player
 			init();
+			
+			// Reset the timer
+			timerReset();
+			timerStart();
 			
 			// Restore the values
 			$scope.player.prestige = newPrestige;
 			$scope.player.preferences = preferences;
 			$scope.player.version = version;
+			$scope.player.sprintTimes = sprintTimes;
 			
 			// Generate the prestige values
 			generatePrestigePlayer($scope.player.prestige);
@@ -257,9 +270,13 @@ angular.module('incremental',[])
 		};
 		
 		function adjustCurrency(currency){
-			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige]) > 0){
+			if(currency.comparedTo($scope.prestigeGoal[$scope.player.prestige]) >= 0){
+				if($scope.player.sprintFinished == false){
+					$scope.player.sprintFinished = true;
+					timerStop();
+					$scope.player.sprintTimes.push(timerSeconds);
+				}
 				currency = $scope.prestigeGoal[$scope.player.prestige];
-				$scope.player.sprintFinished = true;
 			}
 			return currency;
 		}
@@ -283,5 +300,52 @@ angular.module('incremental',[])
 			generatePrestigeUpgrades($scope.player.prestige);
             $interval(update,1000);
             $interval($scope.save,60000);
+			timerStart();
         });
+		
+		var timer;
+		var timerSeconds = 0;
+			
+		function timerSet(seconds){
+			timerSeconds = seconds;
+			alert($scope.player.sprintFinished);
+			if($scope.player.sprintFinished == true){
+				timerStop();
+			}
+		}
+			
+		function timerAdd() {
+			timerSeconds++;
+		}
+		
+		function timerStart() {
+			if(angular.isDefined(timer) || $scope.player.sprintFinished == true){
+				return;
+			}
+			timer = $interval(timerAdd,1000);
+		}
+		
+		function timerStop() {
+			if (angular.isDefined(timer)) {
+				$interval.cancel(timer);
+				timer = undefined;
+            }
+		}
+		
+		function timerReset() {
+			timerSeconds = 0;
+		}
+		
+		$scope.getSprintTime = function getSprintTime(){
+			return padCeroes(parseInt(timerSeconds/3600))+":"+
+				padCeroes(parseInt((timerSeconds%3600)/60))+":"+
+				padCeroes(timerSeconds%60);
+		};
+		
+		function padCeroes(number){
+			if(number <= 9){
+				return "0"+number;
+			}
+			return number;
+		};
 }]);

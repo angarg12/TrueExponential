@@ -19,6 +19,8 @@
         <div id="game">
             <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="trustedPrettifyNumber(player.currency)"/></span></h2>
             <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
+            <h2>Time: {{getSprintTime()}}</h2>
+            <h2>{{player.sprintTimes}}</h2>
             <h2>Goal<sup ng-if="player.prestige > 0">{{player.prestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[player.prestige])"/></h2>
             <div class="progress-striped" style="margin-bottom:0;width:80%;">
 				<div ng-if="!player.sprintFinished">
@@ -66,20 +68,6 @@
                     <td>
                         <button id="save" ng-click="save()">Save</button>
                     <td>Last save time: {{lastSave}}</td>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="exportSave" ng-click="exportSave()">Export Save</button>
-                    <td id="exportSaveContents" style="display: none">
-                        Copy this text:
-                        <input id="exportSaveText" type="text" readonly>
-                    </td>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="importSave" ng-click="importSave()">Import Save</button>
                     </td>
                 </tr>
                 <tr>
