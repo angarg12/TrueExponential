@@ -5,7 +5,7 @@ angular.module('incremental',[])
 		
 		var startPlayer = {
 			cashPerClick: new Decimal(1),
-			multiplier: new Decimal(2),
+			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			clickUpgradeLevel: [],
@@ -102,27 +102,7 @@ angular.module('incremental',[])
 			}
 			$scope.loadPreferences();
 		}
-		ajustar import y export
-		$scope.exportSave = function exportSave() {
-			var exportText = btoa(JSON.stringify($scope.player));
-			
-			document.getElementById("exportSaveContents").style = "display: initial";
-			document.getElementById("exportSaveText").value = exportText;
-			document.getElementById("exportSaveText").select();
-		}
-		
-		$scope.importSave = function importSave(){
-			var importText = prompt("Paste the text you were given by the export save dialog here.\n" +
-										"Warning: this will erase your current save!");
-			if(importText){
-				$scope.player = JSON.parse(atob(importText));
-				$scope.player.currency = new Decimal($scope.player.currency);
-				versionControl(true);
-				save();
-				$scope.loadPreferences();
-			}
-		}
-		
+
 		$scope.updatePreferences = function updatePreferences(preference){
 			$scope.player.preferences[preference] = $scope[preference];
 		};
