@@ -20,7 +20,6 @@
             <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="trustedPrettifyNumber(player.currency)"/></span></h2>
             <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
             <h2>Time: {{getSprintTime()}}</h2>
-            <h2>{{player.sprintTimes}}</h2>
             <h2>Goal<sup ng-if="currentPrestige > 0">{{currentPrestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"/></h2>
             <div class="progress-striped" style="margin-bottom:0;width:80%;">
 				<div ng-if="!sprintFinished">
@@ -51,12 +50,37 @@
             </div>
             <hr>
         </div>
+		<div id="sprints" ng-if="player.maxPrestige > 0">
+            <h2>Sprints</h2>
+            <table id="sprintsTable">
+                <tr>
+                    <td>
+                        Sprint
+                    </td>
+                    <td>
+                        Best time
+                    </td>
+                </tr>
+				<tr ng-repeat="sprint in player.sprintTimes">
+					<td>
+						{{$index}}
+					</td>
+					<td>
+						{{formatTime(sprint)}}
+					</td>
+					<td>
+						<button id="retry" ng-click="prestige($index)">Retry</button>
+					</td>
+				</tr>
+            </table>
+            <hr>
+        </div>
         <div id="options">
             <h2>Options</h2>
             <table id="optionTable">
                 <tr ng-if="sprintFinished && prestigeGoal.length > player.maxPrestige+1">
                     <td>
-                        <button id="prestige" ng-click="prestige()">Prestige</button>
+                        <button id="prestige" ng-click="prestige(currentPrestige+1)">Prestige</button>
                     </td>
                 </tr>
                 <tr>

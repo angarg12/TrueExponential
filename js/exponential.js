@@ -1,11 +1,11 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = '0.8.2';
+		$scope.version = '0.9';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
 			cashPerClick: new Decimal(1),
-			multiplier: new Decimal(10),
+			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			clickUpgradeLevel: [],
@@ -109,8 +109,8 @@ angular.module('incremental',[])
 				init();
 				timerReset();
 				timerStart();
-				generatePrestigePlayer($scope.player.maxPrestige);
-				generatePrestigeUpgrades($scope.player.maxPrestige);
+				generatePrestigePlayer(0);
+				generatePrestigeUpgrades(0);
 				localStorage.removeItem("playerStored");
 				$scope.currentPrestige = 0;
 			}
@@ -127,9 +127,12 @@ angular.module('incremental',[])
 			}
 		};
 		
-		$scope.prestige = function prestige(){
+		$scope.prestige = function prestige(level){
 			// Save the values of the player that persist between prestiges
-			newPrestige = $scope.player.maxPrestige+1;
+			newPrestige = $scope.player.maxPrestige;
+			if(level > newPrestige){
+				newPrestige = level;
+			}
 			preferences = $scope.player.preferences;
 			version = $scope.player.version;
 			sprintTimes = $scope.player.sprintTimes;
@@ -148,9 +151,9 @@ angular.module('incremental',[])
 			$scope.player.sprintTimes = sprintTimes;
 			
 			// Generate the prestige values
-			generatePrestigePlayer($scope.player.maxPrestige);
-			generatePrestigeUpgrades($scope.player.maxPrestige);	
-			$scope.currentPrestige++;
+			generatePrestigePlayer(level);
+			generatePrestigeUpgrades(level);	
+			$scope.currentPrestige = level;
 		};
 		
         function update() {
@@ -177,7 +180,7 @@ angular.module('incremental',[])
 		};
 		
 		function versionControl(ifImport){
-			versionComparison = versionCompare($scope.player.version,'0.8');
+			versionComparison = versionCompare($scope.player.version,'0.9');
 			if(versionComparison == -1 || versionComparison == false){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
@@ -293,13 +296,13 @@ angular.module('incremental',[])
 			}
 			if(typeof $scope.player  === 'undefined'){
 				init();
-				generatePrestigePlayer($scope.player.maxPrestige);
+				generatePrestigePlayer(0);
 			}
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
 			}
 			versionControl(false);
-			generatePrestigeUpgrades($scope.player.maxPrestige);
+			generatePrestigeUpgrades($scope.currentPrestige);
             $interval(update,1000);
             $interval($scope.save,60000);
 			timerStart();
@@ -334,10 +337,14 @@ angular.module('incremental',[])
 			timerSeconds = 0;
 		}
 		
+		$scope.formatTime = function formatTime(time){
+			return padCeroes(parseInt(time/3600))+":"+
+				padCeroes(parseInt((time%3600)/60))+":"+
+				padCeroes(time%60);
+		};
+		
 		$scope.getSprintTime = function getSprintTime(){
-			return padCeroes(parseInt(timerSeconds/3600))+":"+
-				padCeroes(parseInt((timerSeconds%3600)/60))+":"+
-				padCeroes(timerSeconds%60);
+			return $scope.formatTime(timerSeconds);
 		};
 		
 		function padCeroes(number){
