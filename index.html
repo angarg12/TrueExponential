@@ -23,7 +23,7 @@
             <h2>{{player.sprintTimes}}</h2>
             <h2>Goal<sup ng-if="currentPrestige > 0">{{currentPrestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"/></h2>
             <div class="progress-striped" style="margin-bottom:0;width:80%;">
-				<div ng-if="!player.sprintFinished">
+				<div ng-if="!sprintFinished">
 					<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[currentPrestige])*100}}%" ng-if="!logscale">
 						{{Math.max(Math.floor((player.currency.div(prestigeGoal[currentPrestige]))*1000)/10,0)}}%
 					</div>
@@ -31,7 +31,7 @@
 						{{Math.max(Math.floor((player.currency.ln().div(prestigeGoal[currentPrestige].ln()))*1000)/10,0)}}%
 					</div>
 				</div>
-				<div ng-if="player.sprintFinished">
+				<div ng-if="sprintFinished">
 					<div class="progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:100%">
 						100%
 					</div>
@@ -54,7 +54,7 @@
         <div id="options">
             <h2>Options</h2>
             <table id="optionTable">
-                <tr ng-if="player.sprintFinished && prestigeGoal.length > player.maxPrestige+1">
+                <tr ng-if="sprintFinished && prestigeGoal.length > player.maxPrestige+1">
                     <td>
                         <button id="prestige" ng-click="prestige()">Prestige</button>
                     </td>

@@ -3,7 +3,7 @@ angular.module('incremental',[])
 		$scope.version = '0.8.2';
 		$scope.Math = window.Math;
 		
-		var startPlayer = {
+		const startPlayer = {
 			cashPerClick: new Decimal(1),
 			multiplier: new Decimal(10),
 			multiplierUpgradeLevel: [],
@@ -13,14 +13,22 @@ angular.module('incremental',[])
 			currency: new Decimal(0),
 			maxPrestige: 0,
 			version: $scope.version,
-			sprintFinished: false,
 			sprintTimes: [],
 			preferences: {logscale: $scope.logscale}
 			};
 		
+		// Procedurally generated
         var multiplierUpgradeBasePrice = [];
         $scope.multiplierUpgradePower = [];
         $scope.clickUpgradePower = [];
+		
+		// Variables
+		$scope.sprintFinished = false;
+		$scope.currentPrestige = 0;
+		var timer;
+		var timerSeconds = 0;
+		
+		// Constants
 		$scope.prestigeGoal = [new Decimal("1e4"),
 							new Decimal("1e6"),
 							new Decimal("1e16"),
@@ -33,9 +41,6 @@ angular.module('incremental',[])
 							new Decimal("1e50000"),
 							new Decimal("1e100000"),
 							new Decimal("1e9000000000000000")];
-		$scope.currentPrestige = 0;
-		var timer;
-		var timerSeconds = 0;
 
 		$scope.trustedPrettifyNumber = function(value) {
 			return $sce.trustAsHtml(prettifyNumber(value));
@@ -71,13 +76,18 @@ angular.module('incremental',[])
 		$scope.save = function save() {
 			localStorage.setItem("playerStored", JSON.stringify($scope.player));
 			localStorage.setItem("timerSeconds", timerSeconds);
+			localStorage.setItem("sprintFinished", $scope.sprintFinished);
+			localStorage.setItem("currentPrestige", $scope.currentPrestige);
 			var d = new Date();
 			$scope.lastSave = d.toLocaleTimeString();
 		}
 		
 		$scope.load = function load() {
 			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
-			seconds = localStorage.getItem("timerSeconds");
+			seconds = parseInt(localStorage.getItem("timerSeconds"));
+			// Have to do this, otherwise is read as string
+			$scope.sprintFinished = localStorage.getItem("sprintFinished") === "true";
+			$scope.currentPrestige = parseInt(localStorage.getItem("currentPrestige"));
 
 			timerSet(seconds);
 			$scope.player.currency = new Decimal($scope.player.currency);
@@ -255,9 +265,9 @@ angular.module('incremental',[])
 		};
 		
 		function adjustCurrency(currency){
-			if(currency.comparedTo($scope.prestigeGoal[$scope.player.maxPrestige]) >= 0){
-				if($scope.player.sprintFinished == false){
-					$scope.player.sprintFinished = true;
+			if(currency.comparedTo($scope.prestigeGoal[$scope.currentPrestige]) >= 0){
+				if($scope.sprintFinished == false){
+					$scope.sprintFinished = true;
 					timerStop();
 					if($scope.player.sprintTimes.length < $scope.currentPrestige){
 						throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
@@ -267,13 +277,14 @@ angular.module('incremental',[])
 						$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
 					}
 				}
-				currency = $scope.prestigeGoal[$scope.player.maxPrestige];
+				currency = $scope.prestigeGoal[$scope.currentPrestige];
 			}
 			return currency;
 		}
 		
 		function init(){
 			$scope.player = angular.copy(startPlayer);
+			$scope.sprintFinished = false;
 		};
 		
         $document.ready(function(){
@@ -296,7 +307,7 @@ angular.module('incremental',[])
 			
 		function timerSet(seconds){
 			timerSeconds = seconds;
-			if($scope.player.sprintFinished == true){
+			if($scope.sprintFinished == true){
 				timerStop();
 			}
 		}
@@ -306,7 +317,7 @@ angular.module('incremental',[])
 		}
 		
 		function timerStart() {
-			if(angular.isDefined(timer) || $scope.player.sprintFinished == true){
+			if(angular.isDefined(timer) || $scope.sprintFinished == true){
 				return;
 			}
 			timer = $interval(timerAdd,1000);
