@@ -5,7 +5,7 @@ angular.module('incremental',[])
 		
 		var startPlayer = {
 			cashPerClick: new Decimal(1),
-			multiplier: new Decimal(2),
+			multiplier: new Decimal(10),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			clickUpgradeLevel: [],
@@ -21,7 +21,7 @@ angular.module('incremental',[])
         var multiplierUpgradeBasePrice = [];
         $scope.multiplierUpgradePower = [];
         $scope.clickUpgradePower = [];
-        $scope.prestigeGoal = [new Decimal("1e4"),
+		$scope.prestigeGoal = [new Decimal("1e4"),
 							new Decimal("1e6"),
 							new Decimal("1e16"),
 							new Decimal("1e200"),
