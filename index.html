@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <script type="text/javascript" src="js/angular.min.js"></script>
 <script type="text/javascript" src="js/exponential.js"></script>
 <script type="text/javascript" src="js/decimal.min.js"></script>
@@ -41,11 +41,6 @@
             <h3>Multiplier upgrades</h3>
             <div ng-repeat="upgrade in multiplierUpgradePower">
                 <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}}</button>&nbsp;$<span ng-bind-html="trustedPrettifyNumber(player.multiplierUpgradePrice[$index])"/>
-                <br>
-            </div>
-            <h3 ng-if="clickUpgradePower.length > 0">Click power upgrades</h3>
-            <div ng-repeat="upgrade in clickUpgradePower">
-                <button ng-click="buyClickUpgrade($index)" ng-disabled="player.multiplier.comparedTo(player.clickUpgradePrice[$index]) < 0">+{{clickUpgradePower[$index].toString()}} (cost {{player.clickUpgradePrice[$index]}} multiplier)</button>
                 <br>
             </div>
             <hr>

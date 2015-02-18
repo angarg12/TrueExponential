@@ -8,8 +8,6 @@ angular.module('incremental',[])
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
-			clickUpgradeLevel: [],
-			clickUpgradePrice: [],
 			currency: new Decimal(0),
 			maxPrestige: 0,
 			version: $scope.version,
@@ -20,7 +18,6 @@ angular.module('incremental',[])
 		// Procedurally generated
         var multiplierUpgradeBasePrice = [];
         $scope.multiplierUpgradePower = [];
-        $scope.clickUpgradePower = [];
 		
 		// Variables
 		$scope.sprintFinished = false;
@@ -64,15 +61,7 @@ angular.module('incremental',[])
 					times(Decimal.pow(2,exponent));
             }
         };
-        
-        $scope.buyClickUpgrade = function(number) {
-            if ($scope.player.multiplier.comparedTo($scope.player.clickUpgradePrice[number])  >= 0) {			
-                $scope.player.multiplier = $scope.player.multiplier.minus($scope.player.clickUpgradePrice[number]);
-				$scope.player.cashPerClick = $scope.player.cashPerClick.plus($scope.clickUpgradePower[number]);
-                $scope.player.clickUpgradeLevel[number]++;
-            }
-        };
-		
+
 		$scope.save = function save() {
 			localStorage.setItem("playerStored", JSON.stringify($scope.player));
 			localStorage.setItem("timerSeconds", timerSeconds);
@@ -242,28 +231,18 @@ angular.module('incremental',[])
 		function generatePrestigeUpgrades(prestigeLevel){
 			multiplierUpgradeBasePrice = [];
 			$scope.multiplierUpgradePower = [];
-			$scope.clickUpgradePower = [];
 			for (var i = 0; i <= prestigeLevel; i++) { 
 				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
-				if(i > 0){
-					$scope.clickUpgradePower.push(new Decimal(10*Decimal.pow(100,i-1)));
-				};
 			};
 		};
 		
 		function generatePrestigePlayer(prestigeLevel){
 			$scope.player.multiplierUpgradeLevel = [];
 			$scope.player.multiplierUpgradePrice = [];
-			$scope.player.clickUpgradeLevel = [];
-			$scope.player.clickUpgradePrice = [];
 			for (var i = 0; i <= prestigeLevel; i++) { 
 				$scope.player.multiplierUpgradeLevel.push(0);
 				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
-				if(i > 0){
-					$scope.player.clickUpgradeLevel.push(0);
-					$scope.player.clickUpgradePrice.push(0.001*Math.pow(10,i-1));
-				};
 			};
 		};
 		
