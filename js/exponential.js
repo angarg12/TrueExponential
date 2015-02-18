@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = '0.9';
+		$scope.version = '0.9.1';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -134,7 +134,7 @@ angular.module('incremental',[])
 				newPrestige = level;
 			}
 			preferences = $scope.player.preferences;
-			version = $scope.player.version;
+			playerVersion = $scope.player.version;
 			sprintTimes = $scope.player.sprintTimes;
 			
 			// Reset the player
@@ -147,7 +147,7 @@ angular.module('incremental',[])
 			// Restore the values
 			$scope.player.maxPrestige = newPrestige;
 			$scope.player.preferences = preferences;
-			$scope.player.version = version;
+			$scope.player.version = playerVersion;
 			$scope.player.sprintTimes = sprintTimes;
 			
 			// Generate the prestige values
@@ -181,7 +181,7 @@ angular.module('incremental',[])
 		
 		function versionControl(ifImport){
 			versionComparison = versionCompare($scope.player.version,'0.9');
-			if(versionComparison == -1 || versionComparison == false){
+			if(versionComparison === -1 || versionComparison === false){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
 					return;
