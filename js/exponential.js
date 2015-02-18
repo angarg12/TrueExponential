@@ -93,7 +93,7 @@ angular.module('incremental',[])
 			$scope.player.currency = new Decimal($scope.player.currency);
 			$scope.player.multiplier = new Decimal($scope.player.multiplier);
 			$scope.player.cashPerClick = new Decimal($scope.player.cashPerClick);
-			for (i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
+			for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 				$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 			}
 			$scope.loadPreferences();
@@ -102,7 +102,7 @@ angular.module('incremental',[])
 		$scope.reset = function reset(ask) {
 			var confirmation = true;
 			if(ask){
-				var confirmation = confirm("Are you sure you want to permanently erase your savefile?");
+				confirmation = confirm("Are you sure you want to permanently erase your savefile?");
 			}
 			
 			if(confirmation === true){
@@ -233,7 +233,7 @@ angular.module('incremental',[])
 					return 1;
 				} else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
 					return -1;
-				}
+				};
 			}
 			
 			return 0;
@@ -243,13 +243,13 @@ angular.module('incremental',[])
 			multiplierUpgradeBasePrice = [];
 			$scope.multiplierUpgradePower = [];
 			$scope.clickUpgradePower = [];
-			for (i = 0; i <= prestigeLevel; i++) { 
+			for (var i = 0; i <= prestigeLevel; i++) { 
 				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
 				if(i > 0){
 					$scope.clickUpgradePower.push(new Decimal(10*Decimal.pow(100,i-1)));
-				}
-			}
+				};
+			};
 		};
 		
 		function generatePrestigePlayer(prestigeLevel){
@@ -257,14 +257,14 @@ angular.module('incremental',[])
 			$scope.player.multiplierUpgradePrice = [];
 			$scope.player.clickUpgradeLevel = [];
 			$scope.player.clickUpgradePrice = [];
-			for (i = 0; i <= prestigeLevel; i++) { 
+			for (var i = 0; i <= prestigeLevel; i++) { 
 				$scope.player.multiplierUpgradeLevel.push(0);
 				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				if(i > 0){
 					$scope.player.clickUpgradeLevel.push(0);
 					$scope.player.clickUpgradePrice.push(0.001*Math.pow(10,i-1));
-				}
-			}
+				};
+			};
 		};
 		
 		function adjustCurrency(currency){
@@ -327,7 +327,7 @@ angular.module('incremental',[])
 		}
 		
 		function timerStop() {
-			if (angular.isDefined(timer)) {
+			if(angular.isDefined(timer)) {
 				$interval.cancel(timer);
 				timer = undefined;
             }
