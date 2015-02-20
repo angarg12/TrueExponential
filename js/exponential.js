@@ -44,7 +44,7 @@ angular.module('incremental',[])
 		};
 		
         $scope.click = function() {
-			tempCurrency = $scope.player.currency.plus($scope.player.cashPerClick);
+			var tempCurrency = $scope.player.currency.plus($scope.player.cashPerClick);
 			$scope.player.currency = adjustCurrency(tempCurrency);
         };
         
@@ -73,7 +73,7 @@ angular.module('incremental',[])
 		
 		$scope.load = function load() {
 			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
-			seconds = parseInt(localStorage.getItem("timerSeconds"));
+			var seconds = parseInt(localStorage.getItem("timerSeconds"));
 			// Have to do this, otherwise is read as string
 			$scope.sprintFinished = localStorage.getItem("sprintFinished") === "true";
 			$scope.currentPrestige = parseInt(localStorage.getItem("currentPrestige"));
@@ -118,7 +118,7 @@ angular.module('incremental',[])
 		
 		$scope.prestige = function prestige(level){
 			// Save the values of the player that persist between prestiges
-			newPrestige = $scope.player.maxPrestige;
+			var newPrestige = $scope.player.maxPrestige;
 			if(level > newPrestige){
 				newPrestige = level;
 			}
@@ -146,9 +146,9 @@ angular.module('incremental',[])
 		};
 		
         function update() {
-            tempCurrency = $scope.player.currency.times($scope.player.multiplier);
+            var tempCurrency = $scope.player.currency.times($scope.player.multiplier);
 			$scope.player.currency = adjustCurrency(tempCurrency);
-        };
+        }
         
 		function prettifyNumber(number){
 			if(typeof number == 'undefined'){
@@ -166,7 +166,7 @@ angular.module('incremental',[])
 				return  exponential[0]+" x 10<sup>"+prettifyNumber(exponent)+"</sup>";
 			}
 			return number.toString();
-		};
+		}
 		
 		function versionControl(ifImport){
 			versionComparison = versionCompare($scope.player.version,'0.9');
@@ -185,7 +185,7 @@ angular.module('incremental',[])
 				init();
 				$scope.player.version = $scope.version;
 			}
-		};
+		}
 		
 		/**
 		 * Simply compares two string version values.
@@ -222,7 +222,7 @@ angular.module('incremental',[])
 					return 1;
 				} else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
 					return -1;
-				};
+				}
 			}
 			
 			return 0;
@@ -234,8 +234,8 @@ angular.module('incremental',[])
 			for (var i = 0; i <= prestigeLevel; i++) { 
 				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
-			};
-		};
+			}
+		}
 		
 		function generatePrestigePlayer(prestigeLevel){
 			$scope.player.multiplierUpgradeLevel = [];
@@ -243,10 +243,11 @@ angular.module('incremental',[])
 			for (var i = 0; i <= prestigeLevel; i++) { 
 				$scope.player.multiplierUpgradeLevel.push(0);
 				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
-			};
-		};
+			}
+		}
 		
 		function adjustCurrency(currency){
+			var newCurrency = currency;
 			if(currency.comparedTo($scope.prestigeGoal[$scope.currentPrestige]) >= 0){
 				if($scope.sprintFinished == false){
 					$scope.sprintFinished = true;
@@ -259,15 +260,15 @@ angular.module('incremental',[])
 						$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
 					}
 				}
-				currency = $scope.prestigeGoal[$scope.currentPrestige];
+				newCurrency = $scope.prestigeGoal[$scope.currentPrestige];
 			}
-			return currency;
+			return newCurrency;
 		}
 		
 		function init(){
 			$scope.player = angular.copy(startPlayer);
 			$scope.sprintFinished = false;
-		};
+		}
 		
         $document.ready(function(){
 			if(localStorage.getItem("playerStored") != null){
@@ -331,5 +332,5 @@ angular.module('incremental',[])
 				return "0"+number;
 			}
 			return number;
-		};
+		}
 }]);
