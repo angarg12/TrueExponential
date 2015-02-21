@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC"-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
 <script type="text/javascript" src="js/angular.min.js"></script>
 <script type="text/javascript" src="js/exponential.js"></script>
 <script type="text/javascript" src="js/decimal.min.js"></script>
@@ -73,7 +75,7 @@
         <div id="options">
             <h2>Options</h2>
             <table id="optionTable">
-                <tr ng-if="sprintFinished && prestigeGoal.length > player.maxPrestige+1">
+                <tr ng-if="player.sprintTimes.length > currentPrestige && prestigeGoal.length > player.maxPrestige+1">
                     <td>
                         <button id="prestige" ng-click="prestige(currentPrestige+1)">Prestige</button>
                     </td>
