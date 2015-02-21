@@ -56,7 +56,7 @@
                         Best time
                     </td>
                 </tr>
-				<tr ng-repeat="sprint in player.sprintTimes ">
+				<tr ng-repeat="sprint in player.sprintTimes track by $index">
 					<td>
 						{{$index}}
 					</td>
