@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = '0.9.1';
+		$scope.version = '0.10';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -178,7 +178,7 @@ angular.module('incremental',[])
 		}
 		
 		function versionControl(ifImport){
-			versionComparison = versionCompare($scope.player.version,'0.9');
+			versionComparison = versionCompare($scope.player.version,'0.10');
 			if(versionComparison === -1 || versionComparison === false){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
