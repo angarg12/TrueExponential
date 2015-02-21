@@ -1,6 +1,6 @@
 angular.module('incremental',[])
     .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
-		$scope.version = '0.10';
+		$scope.version = '0.10.1';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -26,7 +26,7 @@ angular.module('incremental',[])
 		var timerSeconds = 0;
 		
 		// Constants
-		$scope.prestigeGoal = [new Decimal("1e4"),
+		$scope.prestigeGoal = [new Decimal("1e3"),
 							new Decimal("1e6"),
 							new Decimal("1e16"),
 							new Decimal("1e200"),
@@ -59,7 +59,7 @@ angular.module('incremental',[])
 				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
-				if($scope.player.multiplierUpgradeLevel[number] == 1){
+				if($scope.player.multiplierUpgradeLevel[number] == 1 && isEndgame($scope.currentPrestige)){
 					generatePrestigePlayer(number+1,false);
 					generatePrestigeUpgrades(number+1,false);
 				}
@@ -178,7 +178,7 @@ angular.module('incremental',[])
 		}
 		
 		function versionControl(ifImport){
-			versionComparison = versionCompare($scope.player.version,'0.10');
+			versionComparison = versionCompare($scope.player.version,'0.10.1');
 			if(versionComparison === -1 || versionComparison === false){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
