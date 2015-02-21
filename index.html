@@ -75,7 +75,7 @@
         <div id="options">
             <h2>Options</h2>
             <table id="optionTable">
-                <tr ng-if="player.sprintTimes.length > currentPrestige && prestigeGoal.length > player.maxPrestige+1">
+                <tr ng-if="player.sprintTimes.length > currentPrestige && currentPrestige < prestigeGoal.length-1">
                     <td>
                         <button id="prestige" ng-click="prestige(currentPrestige+1)">Prestige</button>
                     </td>

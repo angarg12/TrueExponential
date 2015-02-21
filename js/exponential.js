@@ -59,6 +59,10 @@ angular.module('incremental',[])
 				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
+				if($scope.player.multiplierUpgradeLevel[number] == 1){
+					generatePrestigePlayer(number+1,false);
+					generatePrestigeUpgrades(number+1,false);
+				}
             }
         };
 
@@ -98,8 +102,8 @@ angular.module('incremental',[])
 				init();
 				timerReset();
 				timerStart();
-				generatePrestigePlayer(0);
-				generatePrestigeUpgrades(0);
+				generatePrestigePlayer(0,true);
+				generatePrestigeUpgrades(0,true);
 				localStorage.removeItem("playerStored");
 				$scope.currentPrestige = 0;
 			}
@@ -140,9 +144,14 @@ angular.module('incremental',[])
 			$scope.player.sprintTimes = sprintTimes;
 			
 			// Generate the prestige values
-			generatePrestigePlayer(level);
-			generatePrestigeUpgrades(level);	
 			$scope.currentPrestige = level;
+			if(isEndgame(level)){
+				generatePrestigePlayer(0,true);
+				generatePrestigeUpgrades(0,true);
+			}else{
+				generatePrestigePlayer(level,true);
+				generatePrestigeUpgrades(level,true);
+			}
 		};
 		
         function update() {
@@ -228,29 +237,33 @@ angular.module('incremental',[])
 			return 0;
 		};
 
-		function generatePrestigeUpgrades(prestigeLevel){
-			multiplierUpgradeBasePrice = [];
-			$scope.multiplierUpgradePower = [];
-			for (var i = 0; i <= prestigeLevel; i++) { 
-				if(i == 0){
-					multiplierUpgradeBasePrice.push(new Decimal(1));
-				}else{
-					multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
-				}
-				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
+		function generatePrestigePlayer(prestigeLevel, reset){
+			if(reset === true){
+				$scope.player.multiplierUpgradeLevel = [];
+				$scope.player.multiplierUpgradePrice = [];
 			}
-		}
-		
-		function generatePrestigePlayer(prestigeLevel){
-			$scope.player.multiplierUpgradeLevel = [];
-			$scope.player.multiplierUpgradePrice = [];
-			for (var i = 0; i <= prestigeLevel; i++) { 
+			for (var i = $scope.player.multiplierUpgradeLevel.length; i <= prestigeLevel; i++) { 
 				if(i == 0){
 					$scope.player.multiplierUpgradePrice.push(new Decimal(1));
 				}else{
 					$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
 				}
 				$scope.player.multiplierUpgradeLevel.push(0);
+			}
+		}
+		
+		function generatePrestigeUpgrades(prestigeLevel, reset){
+			if(reset === true){
+				multiplierUpgradeBasePrice = [];
+				$scope.multiplierUpgradePower = [];
+			}
+			for (var i = multiplierUpgradeBasePrice.length; i <= prestigeLevel; i++) { 
+				if(i == 0){
+					multiplierUpgradeBasePrice.push(new Decimal(1));
+				}else{
+					multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
+				}
+				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
 			}
 		}
 		
@@ -278,19 +291,27 @@ angular.module('incremental',[])
 			$scope.sprintFinished = false;
 		}
 		
+		function isEndgame(level){
+			return level == $scope.prestigeGoal.length-1;
+		}
+		
         $document.ready(function(){
 			if(localStorage.getItem("playerStored") != null){
 				$scope.load();
 			}
 			if(typeof $scope.player  === 'undefined'){
 				init();
-				generatePrestigePlayer(0);
+				generatePrestigePlayer(0,true);
 			}
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
 			}
 			versionControl(false);
-			generatePrestigeUpgrades($scope.currentPrestige);
+			if(isEndgame($scope.currentPrestige)){
+				generatePrestigeUpgrades($scope.player.multiplierUpgradeLevel.length-1,true);
+			}else{
+				generatePrestigeUpgrades($scope.currentPrestige,true);
+			}
             $interval(update,1000);
             $interval($scope.save,60000);
 			timerStart();
