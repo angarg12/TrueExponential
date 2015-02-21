@@ -37,7 +37,7 @@
 				</div>
             </div>				 
             <hr>
-            <button ng-click="click()">Generate cash ${{player.cashPerClick.toString()}}</button>  
+            <button ng-click="click()">Cash*${{player.clickMultiplier.toString()}}</button>  
             <h3>Multiplier upgrades</h3>
             <div ng-repeat="upgrade in multiplierUpgradePower">
                 <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}}</button>&nbsp;$<span ng-bind-html="trustedPrettifyNumber(player.multiplierUpgradePrice[$index])"/>
@@ -56,7 +56,7 @@
                         Best time
                     </td>
                 </tr>
-				<tr ng-repeat="sprint in player.sprintTimes">
+				<tr ng-repeat="sprint in player.sprintTimes ">
 					<td>
 						{{$index}}
 					</td>

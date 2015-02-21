@@ -4,11 +4,11 @@ angular.module('incremental',[])
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
-			cashPerClick: new Decimal(1),
+			clickMultiplier: new Decimal(1.001),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
-			currency: new Decimal(0),
+			currency: new Decimal(1),
 			maxPrestige: 0,
 			version: $scope.version,
 			sprintTimes: [],
@@ -44,7 +44,7 @@ angular.module('incremental',[])
 		};
 		
         $scope.click = function() {
-			var tempCurrency = $scope.player.currency.plus($scope.player.cashPerClick);
+			var tempCurrency = $scope.player.currency.times($scope.player.clickMultiplier);
 			$scope.player.currency = adjustCurrency(tempCurrency);
         };
         
@@ -81,7 +81,7 @@ angular.module('incremental',[])
 			timerSet(seconds);
 			$scope.player.currency = new Decimal($scope.player.currency);
 			$scope.player.multiplier = new Decimal($scope.player.multiplier);
-			$scope.player.cashPerClick = new Decimal($scope.player.cashPerClick);
+			$scope.player.clickMultiplier = new Decimal($scope.player.clickMultiplier);
 			for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 				$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 			}
@@ -232,7 +232,11 @@ angular.module('incremental',[])
 			multiplierUpgradeBasePrice = [];
 			$scope.multiplierUpgradePower = [];
 			for (var i = 0; i <= prestigeLevel; i++) { 
-				multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
+				if(i == 0){
+					multiplierUpgradeBasePrice.push(new Decimal(1));
+				}else{
+					multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
+				}
 				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
 			}
 		}
@@ -241,8 +245,12 @@ angular.module('incremental',[])
 			$scope.player.multiplierUpgradeLevel = [];
 			$scope.player.multiplierUpgradePrice = [];
 			for (var i = 0; i <= prestigeLevel; i++) { 
+				if(i == 0){
+					$scope.player.multiplierUpgradePrice.push(new Decimal(1));
+				}else{
+					$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
+				}
 				$scope.player.multiplierUpgradeLevel.push(0);
-				$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i))));
 			}
 		}
 		
