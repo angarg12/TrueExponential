@@ -10,7 +10,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
         }
     }
 }).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter, $timeout) { 
-		$scope.version = '0.10.1';
+		$scope.version = '0.11';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -230,7 +230,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		}
 		
 		function versionControl(ifImport){
-			versionComparison = versionCompare($scope.player.version,'0.10.1');
+			versionComparison = versionCompare($scope.player.version,'0.11');
 			if(versionComparison === -1 || versionComparison === false){
 				if(ifImport){
 					alert("This save is incompatible with the current version.");
