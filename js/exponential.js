@@ -20,6 +20,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			multiplierUpgradePrice: [],
 			n: new Decimal(1),
 			maxPrestige: 0,
+			//version: $scope.version,
 			version: $scope.version,
 			sprintTimes: [],
 			preferences: {logscale: $scope.logscale}
@@ -120,6 +121,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 			}
 			$scope.loadPreferences();
+			versionControl(false);
 		}
 		
 		$scope.reset = function reset(ask) {
@@ -358,7 +360,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
 			}
-			versionControl(false);
 			if(isEndgame($scope.currentPrestige)){
 				generatePrestigeUpgrades($scope.player.multiplierUpgradeLevel.length-1,true);
 			}else{
