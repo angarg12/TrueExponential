@@ -2,8 +2,19 @@
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 <meta content="utf-8" http-equiv="encoding">
 <script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/angular-animate.min.js"></script>
 <script type="text/javascript" src="js/exponential.js"></script>
 <script type="text/javascript" src="js/decimal.min.js"></script>
+<script type="text/javascript" src="js/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+  		linebreaks: { automatic: true, width: "container" }
+    }       
+    });
+
+</script>
 <link rel="stylesheet" type="text/css" href="styles/main.css">
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -13,91 +24,101 @@
     ga('create', 'UA-58136427-1', 'auto');
     ga('send', 'pageview');
 </script>
-<body ng-app="incremental">
-    <div ng-controller="IncCtrl">
-        <h1>True<sup>xponential</sup></h1>
-        <a href="#game">Game</a> |
-        <a href="#options">Options</a>
-        <div id="game">
-            <h2>Cash: <span style="font-family:Courier New, Courier, monospace">$<span ng-bind-html="trustedPrettifyNumber(player.currency)"/></span></h2>
-            <h2>Cash multiplier: {{(player.multiplier).toFixed(4)}}</h2>
-            <h2>Time: {{getSprintTime()}}</h2>
-            <h2>Goal<sup ng-if="currentPrestige > 0">{{currentPrestige}}</sup>: <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"/></h2>
-            <div class="progress-striped" style="margin-bottom:0;width:80%;">
-				<div ng-if="!sprintFinished">
-					<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.div(prestigeGoal[currentPrestige])*100}}%" ng-if="!logscale">
-						{{Math.max(Math.floor((player.currency.div(prestigeGoal[currentPrestige]))*1000)/10,0)}}%
+<body ng-app="incremental" ng-controller="IncCtrl">
+        <div class="title">$$\text{True}^\text{xponential}\scriptstyle \text{: On sequences of numbers for which } \\\scriptstyle \alpha^n \le a(n) \le \beta^n \text{ for some } 1 \le \alpha \le \beta \text{ and all large } n$$</div>
+        <div class="author">$$\text{angarg12}^{\dagger}\text{, GPLv2 license, version {{version}}}$$</div>
+        <div class="abstract" ng-click="abstractVisible = !abstractVisible"><b class="clickable">Abstract.</b> <span class="animate-show" ng-show="abstractVisible">Each instant <i>t</i>, <i>n</i> is multiplied by the value of your multiplier. Buy lemmas to increase your multiplier, or click to increase <i>n</i>. Get <i>n</i> to the value of the Theorem to prove it. Start a new experiment to prestige. Rerun previous experiments to best your own time.</span></div>
+        <div class="main_text">
+	        <div id="game">
+	        	<div class="section">1. State of the art</div>
+	            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp;<i>n</i> = <span ng-bind-html="trustedPrettifyNumber(player.n)"/></div>
+	            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> = <span>{{getSprintTime()}}</span></div>
+	            <div class="line"><b>Proposition.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)$$\;\times\;$$<span ng-bind-html="trustedPrettifyNumber(player.multiplier)"/></div>
+	            <div class="line"><b>Theorem {{currentPrestige}}.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i> $$\equiv$$ <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"></span><span ng-if="sprintFinished" style="float:right">&#8718;</span></div>
+	            <div class="line clickable" ng-click="click()"><b>Lemma .</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>$$\;\times\;$${{player.clickMultiplier.toString()}}</div>  
+	            <div class="progress-striped">
+					<div ng-if="!sprintFinished">
+						<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.n.div(prestigeGoal[currentPrestige])*100}}%" ng-if="!logscale">
+							{{Math.max(Math.floor((player.n.div(prestigeGoal[currentPrestige]))*1000)/10,0)}}%
+						</div>
+						<div class="progress-bar-log" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.n.ln().div(prestigeGoal[currentPrestige].ln())*100}}%" ng-if="logscale">
+							{{Math.max(Math.floor((player.n.ln().div(prestigeGoal[currentPrestige].ln()))*1000)/10,0)}}%
+						</div>
 					</div>
-					<div class="progress-bar-log" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.currency.ln().div(prestigeGoal[currentPrestige].ln())*100}}%" ng-if="logscale">
-						{{Math.max(Math.floor((player.currency.ln().div(prestigeGoal[currentPrestige].ln()))*1000)/10,0)}}%
+					<div ng-if="sprintFinished">
+						<div class="progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:100%">
+							100%
+						</div>
 					</div>
-				</div>
-				<div ng-if="sprintFinished">
-					<div class="progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:100%">
-						100%
-					</div>
-				</div>
-            </div>				 
-            <hr>
-            <button ng-click="click()">Cash*${{player.clickMultiplier.toString()}}</button>  
-            <h3>Multiplier upgrades</h3>
-            <div ng-repeat="upgrade in multiplierUpgradePower">
-                <button ng-click="buyMultiplierUpgrade($index)" ng-disabled="player.currency.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0">+{{multiplierUpgradePower[$index]}}</button>&nbsp;$<span ng-bind-html="trustedPrettifyNumber(player.multiplierUpgradePrice[$index])"/>
-                <br>
-            </div>
-            <hr>
+	            </div>		
+	        </div>
+	        <div id="buildings">
+	            <div class="section">2. Contributions</div>
+	            <br>
+	            <div ng-repeat="upgrade in multiplierUpgradePower" on-finish-render="ngRepeatFinished">
+	                <div class="line" id="multiplierUpgrade{{$index}}" 
+	                ng-click="buyMultiplierUpgrade($index)" 
+	                ng-disabled="player.n.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0"
+	                ng-class="player.n.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0 ? 'unclickable' : 'clickable'">
+	                	placeholder
+	                </div>
+	                <br>
+	            </div>
+	        </div>
+			<div id="sprints" ng-if="player.maxPrestige > 0">
+	            <div class="section">3. Experimental results</div>
+	            <br>
+	            <table id="sprintsTable" class="table" align="center">
+	            	<thead>
+		                <tr>
+		                    <td>
+		                        Theorem
+		                    </td>
+		                    <td>
+		                        Runtime
+		                    </td>
+		                    <td>
+		                        Rerun
+		                    </td>
+		                </tr>
+				    </thead>
+				    <tbody>
+						<tr ng-repeat="sprint in player.sprintTimes track by $index">
+							<td width="20%">
+								{{$index}}
+							</td>
+							<td width="20%">
+								{{formatTime(sprint)}}
+							</td>
+							<td width="20%">
+								<span id="retry" ng-click="prestige($index)" class="clickable">&#183;&#183;&#183;</span>
+							</td>
+						</tr>
+				    </tbody>
+	            </table>
+	        </div>
+	        <div id="options">	            
+	            <div class="section" ng-if="player.maxPrestige == 0">3. Conclusion</div>
+	            <div class="section" ng-if="player.maxPrestige > 0">4. Conclusion</div>
+	            <div class="line clickable" id="prestige" ng-click="prestige(currentPrestige+1)" ng-if="player.sprintTimes.length > currentPrestige && currentPrestige < prestigeGoal.length-1">Start next experiment</div>
+	            <div class="line clickable" id="reset" ng-click="reset(true)">Retire</div>
+	            <div class="line" id="save"><span class="clickable" ng-click="save()">Save experiment</span>&nbsp; Last: {{lastSave}}</div>
+	            <div class="line">Use log scale <input type="checkbox" ng-model="logscale" ng-click="updatePreferences('logscale')"></div>
+	        </div>	     
+	        <div id="acknowledgements">	
+	            <div class="section">Acknowledgements</div>
+	            <div class="acknowledgements">Thanks to NoDownvotesPlease for the initial code, tangentialThinker (Derivative Clicker) for the save system, kawaritai (Swarm Simulator) for the progress bar, r/incremental_games/ for the comments, feedback and support.</div>
+	        </div>
+	        <div id="links">	
+	            <div class="section">Bibliography</div>
+	            <div class="bibliography">[1] <i>Initial code</i>, <a href="http://jsfiddle.net/6a7yhyjv/">http://jsfiddle.net/6a7yhyjv/</a></div>
+	            <div class="bibliography">[2] <i>AngularJS - Superheroic JavaScript MVW Framework</i>, <a href="https://angularjs.org/">https://angularjs.org/</a></div>
+	            <div class="bibliography">[3] <i>decimal.js - An arbitrary-precision Decimal type for JavaScript</i>, <a href="https://github.com/MikeMcl/decimal.js/">https://github.com/MikeMcl/decimal.js/</a></div>
+	            <div class="bibliography">[4] <i>MathJax - Beautiful math in all browsers</i>. A JavaScript display engine for mathematics that works in all browsers. <a href="http://www.mathjax.org/">http://www.mathjax.org/</a></div>
+	            <div class="bibliography">[5] <i>Derivative Clicker</i>, <a href="http://gzgreg.github.io/DerivativeClicker/">http://gzgreg.github.io/DerivativeClicker/</a></div>
+	            <div class="bibliography">[6] <i>Swarm Simulator</i>, <a href="https://swarmsim.github.io">https://swarmsim.github.io</a></div>
+	            <div class="bibliography">[7] <i>/r/incremental_games/</i>, an incremental games community, <a href="http://www.reddit.com/r/incremental_games/">http://www.reddit.com/r/incremental_games/</a></div>
+	        </div>
+        	<div id="footer" class="footer">\(\dagger\) <a href="changelog.txt" target="_newtab">Changelog</a> | <a href="https://github.com/angarg12/TrueExponential" target="_newtab">Github</a></div>
         </div>
-		<div id="sprints" ng-if="player.maxPrestige > 0">
-            <h2>Sprints</h2>
-            <table id="sprintsTable">
-                <tr>
-                    <td>
-                        Sprint
-                    </td>
-                    <td>
-                        Best time
-                    </td>
-                </tr>
-				<tr ng-repeat="sprint in player.sprintTimes track by $index">
-					<td>
-						{{$index}}
-					</td>
-					<td>
-						{{formatTime(sprint)}}
-					</td>
-					<td>
-						<button id="retry" ng-click="prestige($index)">Retry</button>
-					</td>
-				</tr>
-            </table>
-            <hr>
-        </div>
-        <div id="options">
-            <h2>Options</h2>
-            <table id="optionTable">
-                <tr ng-if="player.sprintTimes.length > currentPrestige && currentPrestige < prestigeGoal.length-1">
-                    <td>
-                        <button id="prestige" ng-click="prestige(currentPrestige+1)">Prestige</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="reset" ng-click="reset(true)">Reset Save</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="save" ng-click="save()">Save</button>
-                    <td>Last save time: {{lastSave}}</td>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Use log scale for progress bar <input type="checkbox" ng-model="logscale" ng-click="updatePreferences('logscale')">
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <p><small>By angarg12 GPLv2 | Version {{version}} | <a href="changelog.txt" target="_newtab">Changelog</a> | <a href="https://github.com/angarg12/TrueExponential" target="_newtab">Github</a></small></p>
-    </div>
 </body>

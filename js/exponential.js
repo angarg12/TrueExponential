@@ -1,5 +1,15 @@
-angular.module('incremental',[])
-    .controller('IncCtrl',['$scope','$document','$interval', '$sce',function($scope,$document,$interval,$sce) { 
+angular.module('incremental',['ngAnimate']).directive('onFinishRender', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            if (scope.$last === true) {
+                $timeout(function () {
+                    scope.$emit('ngRepeatFinished',element);
+                });
+            }
+        }
+    }
+}).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter, $timeout) { 
 		$scope.version = '0.10.1';
 		$scope.Math = window.Math;
 		
@@ -8,7 +18,7 @@ angular.module('incremental',[])
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
-			currency: new Decimal(1),
+			n: new Decimal(1),
 			maxPrestige: 0,
 			version: $scope.version,
 			sprintTimes: [],
@@ -38,19 +48,19 @@ angular.module('incremental',[])
 							new Decimal("1e50000"),
 							new Decimal("1e100000"),
 							new Decimal("1e9000000000000000")];
-
+		
 		$scope.trustedPrettifyNumber = function(value) {
-			return $sce.trustAsHtml(prettifyNumber(value));
+			return $sce.trustAsHtml(prettifyNumberHTML(value));
 		};
 		
         $scope.click = function() {
-			var tempCurrency = $scope.player.currency.times($scope.player.clickMultiplier);
-			$scope.player.currency = adjustCurrency(tempCurrency);
+			var tempN = $scope.player.n.times($scope.player.clickMultiplier);
+			$scope.player.n = adjustN(tempN);
         };
         
         $scope.buyMultiplierUpgrade = function(number) {
-            if ($scope.player.currency.comparedTo($scope.player.multiplierUpgradePrice[number]) >= 0) {
-                $scope.player.currency = $scope.player.currency.div($scope.player.multiplierUpgradePrice[number]);
+            if ($scope.player.n.comparedTo($scope.player.multiplierUpgradePrice[number]) >= 0) {
+                $scope.player.n = $scope.player.n.div($scope.player.multiplierUpgradePrice[number]);
                 $scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
                 $scope.player.multiplierUpgradeLevel[number]++;
 				// The cost function is of the form 2^1.x^(upgradeLevel), where 1.x depends on the upgrade tier
@@ -62,8 +72,28 @@ angular.module('incremental',[])
 				if($scope.player.multiplierUpgradeLevel[number] == 1 && isEndgame($scope.currentPrestige)){
 					generatePrestigePlayer(number+1,false);
 					generatePrestigeUpgrades(number+1,false);
+					refreshUpgradeLine(number+1, true);
 				}
+				refreshUpgradeLine(number, true);
             }
+        };
+        
+        function refreshUpgradeLine(number, force){
+        	// Update formula and typeset
+			var upgradeDiv = document.getElementById('multiplierUpgrade'+number);
+			if(upgradeDiv == null){
+				return;
+			}
+			if(force || upgradeDiv.innerHTML.trim() == "placeholder"){
+				upgradeDiv.innerHTML = "$$\\textbf{Lemma "+(number+1)+".}^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; +\\times"+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
+				MathJax.Hub.Queue(['Typeset',MathJax.Hub,upgradeDiv]);
+			}
+        };
+        
+        function refreshAllUpgradeLine(force){
+        	for(var i = 0; i < $scope.multiplierUpgradePower.length; i++){
+        		refreshUpgradeLine(i, force);
+        	}
         };
 
 		$scope.save = function save() {
@@ -83,7 +113,7 @@ angular.module('incremental',[])
 			$scope.currentPrestige = parseInt(localStorage.getItem("currentPrestige"));
 
 			timerSet(seconds);
-			$scope.player.currency = new Decimal($scope.player.currency);
+			$scope.player.n = new Decimal($scope.player.n);
 			$scope.player.multiplier = new Decimal($scope.player.multiplier);
 			$scope.player.clickMultiplier = new Decimal($scope.player.clickMultiplier);
 			for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
@@ -95,7 +125,7 @@ angular.module('incremental',[])
 		$scope.reset = function reset(ask) {
 			var confirmation = true;
 			if(ask){
-				confirmation = confirm("Are you sure you want to permanently erase your savefile?");
+				confirmation = confirm("Are you sure you want to retire? This will permanently erase your progress.");
 			}
 			
 			if(confirmation === true){
@@ -146,20 +176,24 @@ angular.module('incremental',[])
 			// Generate the prestige values
 			$scope.currentPrestige = level;
 			if(isEndgame(level)){
+				// For endgame, we begin from upgrades 0.
 				generatePrestigePlayer(0,true);
 				generatePrestigeUpgrades(0,true);
 			}else{
 				generatePrestigePlayer(level,true);
 				generatePrestigeUpgrades(level,true);
 			}
+			
+			// Render
+			refreshAllUpgradeLine(true);
 		};
-		
+
         function update() {
-            var tempCurrency = $scope.player.currency.times($scope.player.multiplier);
-			$scope.player.currency = adjustCurrency(tempCurrency);
+            var tempN = $scope.player.n.times($scope.player.multiplier);
+			$scope.player.n = adjustN(tempN);
         }
         
-		function prettifyNumber(number){
+		function prettifyNumberHTML(number){
 			if(typeof number == 'undefined'){
 				return;
 			}
@@ -172,9 +206,27 @@ angular.module('incremental',[])
 				var exponential = number.toString().split("e");
 				var exponent = new Decimal(exponential[1].split("+")[1]);
 				// And it is displayed in with superscript
-				return  exponential[0]+" x 10<sup>"+prettifyNumber(exponent)+"</sup>";
+				return  $filter('number')(exponential[0])+" &#215; 10<sup>"+prettifyNumberHTML(exponent)+"</sup>";
 			}
-			return number.toString();
+			return $filter('number')(number.toString());
+		}
+        
+		function prettifyNumberTeX(number){
+			if(typeof number == 'undefined'){
+				return;
+			}
+				
+			if(number.comparedTo(Infinity) == 0){
+				return "\\infty";
+			}
+			if(number.comparedTo(1e21) >= 0){
+				// Very ugly way to extract the mantisa and exponent from an exponential string
+				var exponential = number.toString().split("e");
+				var exponent = new Decimal(exponential[1].split("+")[1]);
+				// And it is displayed in with superscript
+				return  $filter('number')(exponential[0])+" \\times 10^{"+prettifyNumberHTML(exponent)+"}";
+			}
+			return $filter('number')(number.toString());
 		}
 		
 		function versionControl(ifImport){
@@ -263,13 +315,13 @@ angular.module('incremental',[])
 				}else{
 					multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
 				}
-				$scope.multiplierUpgradePower.push(0.0001*Math.pow(10,i));
+				$scope.multiplierUpgradePower.push(new Decimal(new Decimal(0.0001).times(Decimal.pow(10,i))));
 			}
 		}
 		
-		function adjustCurrency(currency){
-			var newCurrency = currency;
-			if(currency.comparedTo($scope.prestigeGoal[$scope.currentPrestige]) >= 0){
+		function adjustN(n){
+			var newN = n;
+			if(n.comparedTo($scope.prestigeGoal[$scope.currentPrestige]) >= 0){
 				if($scope.sprintFinished == false){
 					$scope.sprintFinished = true;
 					timerStop();
@@ -281,9 +333,9 @@ angular.module('incremental',[])
 						$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
 					}
 				}
-				newCurrency = $scope.prestigeGoal[$scope.currentPrestige];
+				newN = $scope.prestigeGoal[$scope.currentPrestige];
 			}
-			return newCurrency;
+			return newN;
 		}
 		
 		function init(){
@@ -295,7 +347,7 @@ angular.module('incremental',[])
 			return level == $scope.prestigeGoal.length-1;
 		}
 		
-        $document.ready(function(){
+		$timeout(function(){
 			if(localStorage.getItem("playerStored") != null){
 				$scope.load();
 			}
@@ -317,6 +369,13 @@ angular.module('incremental',[])
 			timerStart();
         });
 			
+		$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, element) {
+			// If the element is an upgrade multiplier
+			if(element[0].innerHTML.indexOf("multiplierUpgrade") > -1){
+				refreshAllUpgradeLine(false);
+			}
+		});
+		
 		function timerSet(seconds){
 			timerSeconds = seconds;
 			if($scope.sprintFinished == true){
@@ -353,7 +412,7 @@ angular.module('incremental',[])
 		};
 		
 		$scope.getSprintTime = function getSprintTime(){
-			return $scope.formatTime(timerSeconds);
+			return timerSeconds;
 		};
 		
 		function padCeroes(number){
