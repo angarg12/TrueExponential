@@ -57,6 +57,7 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+    text-decoration: underline;
 }
 
 .unclickable {
@@ -66,6 +67,7 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+    text-decoration: underline;
 }
 
 

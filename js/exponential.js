@@ -14,7 +14,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
-			clickMultiplier: new Decimal(1.001),
+			clickMultiplier: new Decimal(1),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
@@ -54,7 +54,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		};
 		
         $scope.click = function() {
-			var tempN = $scope.player.n.times($scope.player.clickMultiplier);
+			var tempN = $scope.player.n.plus($scope.player.clickMultiplier);
 			$scope.player.n = adjustN(tempN);
         };
         
@@ -85,7 +85,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				return;
 			}
 			if(force || upgradeDiv.innerHTML.trim() == "placeholder"){
-				upgradeDiv.innerHTML = "$$\\textbf{Lemma "+(number+1)+".}^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; +\\times"+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
+				upgradeDiv.innerHTML = "<b>Lemma "+(number+1)+".</b>$$^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; +\\times"+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
 				MathJax.Hub.Queue(['Typeset',MathJax.Hub,upgradeDiv]);
 			}
         };
