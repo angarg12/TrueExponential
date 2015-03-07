@@ -20,7 +20,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			multiplierUpgradePrice: [],
 			n: new Decimal(1),
 			maxPrestige: 0,
-			//version: $scope.version,
 			version: $scope.version,
 			sprintTimes: [],
 			preferences: {logscale: $scope.logscale}
@@ -107,20 +106,25 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		}
 		
 		$scope.load = function load() {
-			$scope.player = JSON.parse(localStorage.getItem("playerStored"));
-			var seconds = parseInt(localStorage.getItem("timerSeconds"));
-			// Have to do this, otherwise is read as string
-			$scope.sprintFinished = localStorage.getItem("sprintFinished") === "true";
-			$scope.currentPrestige = parseInt(localStorage.getItem("currentPrestige"));
-
-			timerSet(seconds);
-			$scope.player.n = new Decimal($scope.player.n);
-			$scope.player.multiplier = new Decimal($scope.player.multiplier);
-			$scope.player.clickMultiplier = new Decimal($scope.player.clickMultiplier);
-			for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
-				$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
+			try {
+				$scope.player = JSON.parse(localStorage.getItem("playerStored"));
+				var seconds = parseInt(localStorage.getItem("timerSeconds"));
+				// Have to do this, otherwise is read as string
+				$scope.sprintFinished = localStorage.getItem("sprintFinished") === "true";
+				$scope.currentPrestige = parseInt(localStorage.getItem("currentPrestige"));
+	
+				timerSet(seconds);
+				$scope.player.n = new Decimal($scope.player.n);
+				$scope.player.multiplier = new Decimal($scope.player.multiplier);
+				$scope.player.clickMultiplier = new Decimal($scope.player.clickMultiplier);
+				for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
+					$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
+				}
+				$scope.loadPreferences();
+			}catch(err){
+				alert("Error loading savegame, reset forced.")
+				reset(false);
 			}
-			$scope.loadPreferences();
 			versionControl(false);
 		}
 		
