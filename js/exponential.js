@@ -123,7 +123,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				$scope.loadPreferences();
 			}catch(err){
 				alert("Error loading savegame, reset forced.")
-				reset(false);
+				$scope.reset(false);
 			}
 			versionControl(false);
 		}
