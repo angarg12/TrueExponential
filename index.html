@@ -31,11 +31,11 @@
         <div class="main_text">
 	        <div id="game">
 	        	<div class="section">1. State of the art</div>
-	            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp;<i>n</i> = <span ng-bind-html="trustedPrettifyNumber(player.n)"/></div>
+	            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp;<i>n</i>(<i>t</i>) = <span ng-bind-html="trustedPrettifyNumber(player.n)"/></div>
 	            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> = <span>{{getSprintTime()}}</span></div>
-	            <div class="line"><b>Proposition.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)$$\;\times\;$$<span ng-bind-html="trustedPrettifyNumber(player.multiplier)"/></div>
-	            <div class="line"><b>Theorem {{currentPrestige}}.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i> $$\equiv$$ <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"></span><span ng-if="sprintFinished" style="float:right">&#8718;</span></div>
-	            <div class="line clickable" ng-click="click()"><b>Lemma .</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i> + {{player.clickMultiplier.toString()}}</div>  
+	            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)$$\;\times\;$$<span ng-bind-html="trustedPrettifyNumber(player.multiplier)"/></div>
+	            <div class="line"><b>Theorem {{currentPrestige}}.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>) $$\equiv$$ <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"></span><span ng-if="sprintFinished" style="float:right">&#8718;</span></div>
+	            <div class="line clickable" ng-click="click()"><b>Lemma.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>) = <i>n</i>(<i>t</i>) + {{player.clickMultiplier.toString()}}</div>  
 	            <div class="progress-striped">
 					<div ng-if="!sprintFinished">
 						<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.n.div(prestigeGoal[currentPrestige])*100}}%" ng-if="!logscale">

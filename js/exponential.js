@@ -85,7 +85,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				return;
 			}
 			if(force || upgradeDiv.innerHTML.trim() == "placeholder"){
-				upgradeDiv.innerHTML = "<b>Lemma "+(number+1)+".</b>$$^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; +\\times"+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
+				upgradeDiv.innerHTML = "<b>Lemma "+(number+1)+".</b>$$^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; +\\times"+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
 				MathJax.Hub.Queue(['Typeset',MathJax.Hub,upgradeDiv]);
 			}
         };
