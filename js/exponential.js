@@ -10,7 +10,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
         }
     }
 }).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter,$timeout) { 
-		$scope.version = '0.11';
+		$scope.version = '0.11.1';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -22,7 +22,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			maxPrestige: 0,
 			version: $scope.version,
 			sprintTimes: [],
-			preferences: {logscale: $scope.logscale}
+			preferences: {logscale: false,
+				abstractVisible: true}
 			};
 		
 		// Procedurally generated
@@ -120,7 +121,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 					$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 				}
-				$scope.loadPreferences();
 			}catch(err){
 				alert("Error loading savegame, reset forced.")
 				$scope.reset(false);
@@ -143,18 +143,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				localStorage.removeItem("playerStored");
 				$scope.currentPrestige = 0;
 			}
-			$scope.loadPreferences();
 		}
-
-		$scope.updatePreferences = function updatePreferences(preference){
-			$scope.player.preferences[preference] = $scope[preference];
-		};
-		
-		$scope.loadPreferences = function loadPreferences(){
-			for(preference in $scope.player.preferences){
-				$scope[preference] = $scope.player.preferences[preference];
-			}
-		};
 		
 		$scope.prestige = function prestige(level){
 			// Save the values of the player that persist between prestiges
@@ -236,6 +225,10 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		}
 		
 		function versionControl(ifImport){
+			versionComparison = versionCompare($scope.player.version,'0.11.1');
+			if(versionComparison === -1 || versionComparison === false){
+				$scope.player.preferences = angular.copy(startPlayer.preferences);
+			}
 			versionComparison = versionCompare($scope.player.version,'0.11');
 			if(versionComparison === -1 || versionComparison === false){
 				if(ifImport){
