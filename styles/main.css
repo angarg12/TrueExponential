@@ -58,6 +58,7 @@
 	-ms-user-select: none;
 	user-select: none;
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .unclickable {

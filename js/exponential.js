@@ -9,7 +9,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
             }
         }
     }
-}).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter, $timeout) { 
+}).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter,$timeout) { 
 		$scope.version = '0.11';
 		$scope.Math = window.Math;
 		
