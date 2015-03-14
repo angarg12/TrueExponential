@@ -15,7 +15,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		
 		const startPlayer = {
 			clickMultiplier: new Decimal(1),
-			multiplier: new Decimal(10000),
+			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			n: new Decimal(1),
