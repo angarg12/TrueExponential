@@ -10,7 +10,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
         }
     }
 }).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter,$timeout) { 
-		$scope.version = '0.11.1';
+		$scope.version = '0.11.2';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -231,6 +231,13 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		}
 		
 		function versionControl(ifImport){
+			versionComparison = versionCompare($scope.player.version,'0.11.2');
+			if(versionComparison === -1 || versionComparison === false){
+				if($scope.currentPrestige == 11){
+					$scope.prestige(11);
+					$scope.player.version = '0.11.2';
+				}
+			}
 			versionComparison = versionCompare($scope.player.version,'0.11.1');
 			if(versionComparison === -1 || versionComparison === false){
 				$scope.player.preferences = angular.copy(startPlayer.preferences);
