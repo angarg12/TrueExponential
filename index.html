@@ -39,7 +39,8 @@
         	<div class="section">1. State of the art</div>
             <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp;<i>n</i>(<i>t</i>) = <span ng-bind-html="trustedPrettifyNumber(player.n)"/></div>
             <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>r</i>(<i>t</i>) = <span ng-bind-html="trustedPrettifyNumber(player.multiplier)"/></div>
-            <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)$$\;\times\;$$<i>r</i>(<i>t</i>)</div>
+            <div class="line" ng-if="isEndgame(currentPrestige) == false"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)$$\;\times\;$$<i>r</i>(<i>t</i>)</div>
+            <div class="line" ng-if="isEndgame(currentPrestige)"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)<sup><i>r</i>(<i>t</i>)</sup></div>
             <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> = <span>{{getSprintTime()}}</span></div>
             <div class="line"><b>Theorem {{currentPrestige}}.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>) $$\equiv$$ <span ng-bind-html="trustedPrettifyNumber(prestigeGoal[currentPrestige])"></span><span ng-if="sprintFinished" style="float:right">&#8718;</span></div>
             <div class="line clickable" ng-click="click()"><b>Lemma.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>) = <i>n</i>(<i>t</i>) + {{player.clickMultiplier.toString()}}</div>  

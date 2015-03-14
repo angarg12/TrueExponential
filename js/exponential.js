@@ -70,11 +70,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
-				if($scope.player.multiplierUpgradeLevel[number] == 1 && isEndgame($scope.currentPrestige)){
-					generatePrestigePlayer(number+1,false);
-					generatePrestigeUpgrades(number+1,false);
-					refreshUpgradeLine(number+1, true);
-				}
 				refreshUpgradeLine(number, true);
             }
         };
@@ -170,7 +165,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			
 			// Generate the prestige values
 			$scope.currentPrestige = level;
-			if(isEndgame(level)){
+			if($scope.isEndgame(level)){
 				// For endgame, we begin from upgrades 0.
 				generatePrestigePlayer(0,true);
 				generatePrestigeUpgrades(0,true);
@@ -184,7 +179,12 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		};
 
         function update() {
-            var tempN = $scope.player.n.times($scope.player.multiplier);
+            var tempN;
+            if($scope.isEndgame($scope.currentPrestige)){
+            	tempN = Decimal.pow($scope.player.n,$scope.player.multiplier);
+            }else{
+            	tempN = $scope.player.n.times($scope.player.multiplier);
+            }
 			$scope.player.n = adjustN(tempN);
         }
         
@@ -348,7 +348,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			$scope.sprintFinished = false;
 		}
 		
-		function isEndgame(level){
+		$scope.isEndgame = function isEndgame(level){
 			return level == $scope.prestigeGoal.length-1;
 		}
 		
@@ -363,8 +363,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			if(typeof $scope.lastSave  === 'undefined'){
 				$scope.lastSave = "None";
 			}
-			if(isEndgame($scope.currentPrestige)){
-				generatePrestigeUpgrades($scope.player.multiplierUpgradeLevel.length-1,true);
+			if($scope.isEndgame($scope.currentPrestige)){
+				generatePrestigeUpgrades(0,true);
 			}else{
 				generatePrestigeUpgrades($scope.currentPrestige,true);
 			}
