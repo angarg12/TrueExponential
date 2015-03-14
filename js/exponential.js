@@ -15,7 +15,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		
 		const startPlayer = {
 			clickMultiplier: new Decimal(1),
-			multiplier: new Decimal(1),
+			multiplier: new Decimal(10000),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			n: new Decimal(1),
@@ -198,12 +198,15 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			}
 			if(number.comparedTo(1e21) >= 0){
 				// Very ugly way to extract the mantisa and exponent from an exponential string
-				var exponential = number.toString().split("e");
+				var exponential = number.toSignificantDigits(6).toString().split("e");
 				var exponent = new Decimal(exponential[1].split("+")[1]);
 				// And it is displayed in with superscript
-				return  $filter('number')(exponential[0])+" &#215; 10<sup>"+prettifyNumberHTML(exponent)+"</sup>";
+				if(exponential[0] == "1"){
+					return  "10<sup>"+prettifyNumberHTML(exponent)+"</sup>";							
+				}
+				return  $filter('number')(exponential[0])+" &#215; 10<sup>"+prettifyNumberHTML(exponent)+"</sup>";						
 			}
-			return $filter('number')(number.toString());
+			return $filter('number')(number.toDecimalPlaces(5).toString());
 		}
         
 		function prettifyNumberTeX(number){
@@ -216,12 +219,15 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			}
 			if(number.comparedTo(1e21) >= 0){
 				// Very ugly way to extract the mantisa and exponent from an exponential string
-				var exponential = number.toString().split("e");
+				var exponential = number.toSignificantDigits(6).toString().split("e");
 				var exponent = new Decimal(exponential[1].split("+")[1]);
 				// And it is displayed in with superscript
+				if(exponential[0] == "1"){
+					return "10^{"+prettifyNumberHTML(exponent)+"}";
+				}
 				return  $filter('number')(exponential[0])+" \\times 10^{"+prettifyNumberHTML(exponent)+"}";
 			}
-			return $filter('number')(number.toString());
+			return $filter('number')(number.toDecimalPlaces(5).toString());
 		}
 		
 		function versionControl(ifImport){
