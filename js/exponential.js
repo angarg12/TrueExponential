@@ -2,26 +2,29 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
     return {
         restrict: 'A',
         link: function (scope, element, attr) {
-            if (scope.$last === true) {
-                $timeout(function () {
-                    scope.$emit('ngRepeatFinished',element);
-                });
-            }
+            $timeout(function () {
+                scope.$emit('ngRepeatFinished',element);
+            });
         }
     }
-}).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter,$timeout) { 
-		$scope.version = '0.11.2';
+}).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', '$compile', function($scope,$document,$interval,$sce,$filter,$timeout,$compile) { 
+		$scope.version = '1.0';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
 			clickMultiplier: new Decimal(1),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
-			multiplierUpgradePrice: [],
+			multiplierUpgradePrice: [],			
+			producerUpgradeLevel: [],	
+			producerUpgradeManual: [],
+			producerUpgradePrice: [],
 			n: new Decimal(1),
 			maxPrestige: 0,
+			maxSecondPrestige: 0,
 			version: $scope.version,
 			sprintTimes: [],
+			sprintSecondTimes: [],
 			preferences: {logscale: false,
 				abstractVisible: true}
 			};
@@ -35,7 +38,9 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		$scope.currentPrestige = 0;
 		var timer;
 		var timerSeconds = 0;
-		
+		/*		 
+		balance the goals
+		*/
 		// Constants
 		$scope.prestigeGoal = [new Decimal("1e3"),
 							new Decimal("1e6"),
@@ -50,6 +55,47 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 							new Decimal("1e100000"),
 							new Decimal("1e9000000000000000")];
 		
+		$scope.prestigeTier = 0;
+		// Constants
+		$scope.secondPrestigeGoal = [new Decimal("1e4"),
+			 							new Decimal("1e500"),
+										new Decimal("1e3000"),
+										new Decimal("1e10000"),
+										new Decimal("1e25000"),
+										new Decimal("1e50000"),
+										new Decimal("1e125000"),
+										new Decimal("1e250000"),
+										new Decimal("1e500000"),
+										new Decimal("1e1000000"),
+										new Decimal("1e2500000")];
+		
+		var producerUpgradeBasePrice = [];
+						
+		$scope.getGoal = function(){
+			if($scope.prestigeTier == 0){
+				return $scope.prestigeGoal[$scope.currentPrestige];
+			}
+			return $scope.secondPrestigeGoal[$scope.currentPrestige];			
+		}
+		
+		$scope.buyProducerUpgrade = function(number) {
+			if(typeof number == "undefined"){
+				return;
+			}
+            if ($scope.player.n.comparedTo($scope.player.producerUpgradePrice[number]) >= 0) {
+                $scope.player.n = $scope.player.n.div($scope.player.producerUpgradePrice[number]);
+                //$scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
+                $scope.player.producerUpgradeLevel[number] = $scope.player.producerUpgradeLevel[number].plus(1);
+                $scope.player.producerUpgradeManual[number] = $scope.player.producerUpgradeManual[number].plus(1);
+				// The cost function is of the form 2^1.x^(upgradeLevel), where 1.x depends on the upgrade tier
+				var firstTerm = (1+0.2*(number+1)).toPrecision(15);
+				var secondTerm = $scope.player.producerUpgradeManual[number];
+				var exponent = Decimal.pow(firstTerm,secondTerm);
+				$scope.player.producerUpgradePrice[number] = producerUpgradeBasePrice[number].
+					times(Decimal.pow(2,exponent));
+            }
+        };
+		
 		$scope.trustedPrettifyNumber = function(value) {
 			return $sce.trustAsHtml(prettifyNumberHTML(value));
 		};
@@ -60,6 +106,9 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
         };
         
         $scope.buyMultiplierUpgrade = function(number) {
+        	if(typeof number == "undefined"){
+        		return;
+        	}
             if ($scope.player.n.comparedTo($scope.player.multiplierUpgradePrice[number]) >= 0) {
                 $scope.player.n = $scope.player.n.div($scope.player.multiplierUpgradePrice[number]);
                 $scope.player.multiplier = $scope.player.multiplier.plus($scope.multiplierUpgradePower[number]);
@@ -70,7 +119,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
-				refreshUpgradeLine(number, true);
             }
         };
         
@@ -78,10 +126,40 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
         	// Update formula and typeset
 			var upgradeDiv = document.getElementById('multiplierUpgrade'+number);
 			if(upgradeDiv == null){
-				return;
+				upgradeDiv = document.getElementById('producerUpgrade'+number);
+				if(upgradeDiv == null){
+					return;					
+				}
 			}
 			if(force || upgradeDiv.innerHTML.trim() == "placeholder"){
-				upgradeDiv.innerHTML = "<b>Lemma "+(number+1)+".</b>$$^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; r(t) + "+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
+				if($scope.prestigeTier == 0){
+					upgradeDiv.innerHTML = "<b>Lemma "+(number+1)+".</b>$$^{"+$scope.player.multiplierUpgradeLevel[number]+"}\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.multiplierUpgradePrice[number])+"} \\Rightarrow\\; r(t) + "+prettifyNumberTeX($scope.multiplierUpgradePower[number])+"$$";
+				}
+				if($scope.prestigeTier == 1){
+					if(number == 0){
+						upgradeDiv.innerHTML = "<b>Corollary "+(number+1)+".</b>" +
+								"<span class=\"supsub\">" +
+									"<span class=\"superscript\">" +
+										"<span class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeLevel["+number+"])\"></span>" +
+										"<span class=\"mathjax_corollary\">$$\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.producerUpgradePrice[number])+"} \\Rightarrow\\; r(t+1) = r(t) + 1$$</span>" +
+									"</span>" +
+									"<span class=\"subscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeManual["+number+"])\"></span>" +
+								"</span>";
+					}else{
+						upgradeDiv.innerHTML = "<b>Corollary "+(number+1)+".</b><span class=\"supsub\"><span class=\"superscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeLevel["+number+"])\"></span><span class=\"subscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeManual["+number+"])\"></span></span><span class=\"mathjax_container\">$$\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.producerUpgradePrice[number])+"} \\Rightarrow\\; $$ Corollary "+(number)+"$$(t+1) = $$ Corollary "+(number)+"$$(t) + 1$$</span>";
+						upgradeDiv.innerHTML = "<b>Corollary "+(number+1)+".</b>" +
+						"<span class=\"supsub\">" +
+							"<span class=\"superscript\">" +
+								"<span class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeLevel["+number+"])\"></span>" +
+								"<span class=\"mathjax_corollary\">$$\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.producerUpgradePrice[number])+"} \\Rightarrow\\; $$ Corollary "+(number)+"$$(t+1) = $$ Corollary "+(number)+"$$(t) + 1$$</span>" +
+							"</span>" +
+							"<span class=\"subscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeManual["+number+"])\"></span>" +
+						"</span>";
+						
+					}					
+				}
+				var linkingFunction = $compile(upgradeDiv);
+				upgradeDiv = linkingFunction($scope)[0];
 				MathJax.Hub.Queue(['Typeset',MathJax.Hub,upgradeDiv]);
 			}
         };
@@ -97,6 +175,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			localStorage.setItem("timerSeconds", timerSeconds);
 			localStorage.setItem("sprintFinished", $scope.sprintFinished);
 			localStorage.setItem("currentPrestige", $scope.currentPrestige);
+			localStorage.setItem("prestigeTier", $scope.prestigeTier);
 			var d = new Date();
 			$scope.lastSave = d.toLocaleTimeString();
 		}
@@ -108,7 +187,10 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				// Have to do this, otherwise is read as string
 				$scope.sprintFinished = localStorage.getItem("sprintFinished") === "true";
 				$scope.currentPrestige = parseInt(localStorage.getItem("currentPrestige"));
-	
+				$scope.prestigeTier = parseInt(localStorage.getItem("prestigeTier"));
+
+				versionControl(false);
+				
 				timerSet(seconds);
 				$scope.player.n = new Decimal($scope.player.n);
 				$scope.player.multiplier = new Decimal($scope.player.multiplier);
@@ -116,11 +198,19 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 					$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 				}
+				for (var i = 0; i < $scope.player.producerUpgradePrice.length; i++) { 
+					$scope.player.producerUpgradePrice[i] = new Decimal($scope.player.producerUpgradePrice[i]);					
+				}
+				for (var i = 0; i < $scope.player.producerUpgradeLevel.length; i++) { 
+					$scope.player.producerUpgradeLevel[i] = new Decimal($scope.player.producerUpgradeLevel[i]);					
+				}
+				for (var i = 0; i < $scope.player.producerUpgradeManual.length; i++) { 
+					$scope.player.producerUpgradeManual[i] = new Decimal($scope.player.producerUpgradeManual[i]);					
+				}
 			}catch(err){
 				alert("Error loading savegame, reset forced.")
 				$scope.reset(false);
 			}
-			versionControl(false);
 		}
 		
 		$scope.reset = function reset(ask) {
@@ -137,18 +227,28 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				generatePrestigeUpgrades(0,true);
 				localStorage.removeItem("playerStored");
 				$scope.currentPrestige = 0;
+				$scope.prestigeTier = 0;
 			}
 		}
 		
-		$scope.prestige = function prestige(level){
+		$scope.prestige = function prestige(level, tier){
 			// Save the values of the player that persist between prestiges
 			var newPrestige = $scope.player.maxPrestige;
-			if(level > newPrestige){
-				newPrestige = level;
+			var newSecondPrestige = $scope.player.maxSecondPrestige;
+			if($scope.prestigeTier == 0){
+				if(level > newPrestige){
+					newPrestige = level;
+				}
+			}else{
+				if(level > newSecondPrestige){
+					newSecondPrestige = level;
+				}		
 			}
+			
 			preferences = $scope.player.preferences;
 			playerVersion = $scope.player.version;
 			sprintTimes = $scope.player.sprintTimes;
+			sprintSecondTimes = $scope.player.sprintSecondTimes;
 			
 			// Reset the player
 			init();
@@ -159,9 +259,12 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			
 			// Restore the values
 			$scope.player.maxPrestige = newPrestige;
+			$scope.player.maxSecondPrestige = newSecondPrestige;
 			$scope.player.preferences = preferences;
 			$scope.player.version = playerVersion;
 			$scope.player.sprintTimes = sprintTimes;
+			$scope.player.sprintSecondTimes = sprintSecondTimes;
+			$scope.prestigeTier = tier;
 			
 			// Generate the prestige values
 			$scope.currentPrestige = level;
@@ -186,6 +289,13 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
             	tempN = $scope.player.n.times($scope.player.multiplier);
             }
 			$scope.player.n = adjustN(tempN);
+			
+			if($scope.prestigeTier == 1 && $scope.sprintFinished == false){
+				$scope.player.multiplier = $scope.player.multiplier.plus($scope.player.producerUpgradeLevel[0].times(0.0001));
+				for(var i = 1; i < $scope.player.producerUpgradeLevel.length; i++){
+					$scope.player.producerUpgradeLevel[i-1] = $scope.player.producerUpgradeLevel[i-1].plus($scope.player.producerUpgradeLevel[i]);
+				}
+			}
         }
         
 		function prettifyNumberHTML(number){
@@ -231,10 +341,19 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		}
 		
 		function versionControl(ifImport){
+			versionComparison = versionCompare($scope.player.version,'1.0');
+			if(versionComparison === -1 || versionComparison === false){
+				$scope.player.producerUpgradeLevel = [];	
+				$scope.player.producerUpgradeManual = [];
+				$scope.player.producerUpgradePrice = [];
+				$scope.player.maxSecondPrestige = 0;
+				$scope.player.sprintSecondTimes = [];
+				$scope.player.version = '1.0';				
+			}
 			versionComparison = versionCompare($scope.player.version,'0.11.2');
 			if(versionComparison === -1 || versionComparison === false){
 				if($scope.currentPrestige == 11){
-					$scope.prestige(11);
+					$scope.prestige(11,0);
 					$scope.player.version = '0.11.2';
 				}
 			}
@@ -305,14 +424,21 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			if(reset === true){
 				$scope.player.multiplierUpgradeLevel = [];
 				$scope.player.multiplierUpgradePrice = [];
+				$scope.player.producerUpgradeLevel = [];
+				$scope.player.producerUpgradeManual = [];
+				$scope.player.producerUpgradePrice = [];
 			}
 			for (var i = $scope.player.multiplierUpgradeLevel.length; i <= prestigeLevel; i++) { 
 				if(i == 0){
 					$scope.player.multiplierUpgradePrice.push(new Decimal(1));
+					$scope.player.producerUpgradePrice.push(new Decimal(1));
 				}else{
 					$scope.player.multiplierUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
+					$scope.player.producerUpgradePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
 				}
 				$scope.player.multiplierUpgradeLevel.push(0);
+				$scope.player.producerUpgradeLevel.push(new Decimal(0));
+				$scope.player.producerUpgradeManual.push(new Decimal(0));
 			}
 		}
 		
@@ -320,32 +446,55 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			if(reset === true){
 				multiplierUpgradeBasePrice = [];
 				$scope.multiplierUpgradePower = [];
+				producerUpgradeBasePrice = []; 
 			}
 			for (var i = multiplierUpgradeBasePrice.length; i <= prestigeLevel; i++) { 
 				if(i == 0){
 					multiplierUpgradeBasePrice.push(new Decimal(1));
+					producerUpgradeBasePrice.push(new Decimal(1));
 				}else{
 					multiplierUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
+					producerUpgradeBasePrice.push(new Decimal(Decimal.pow(10,Decimal.pow(2,i-1))));
 				}
 				$scope.multiplierUpgradePower.push(new Decimal(new Decimal(0.0001).times(Decimal.pow(10,i))));
 			}
 		}
 		
 		function adjustN(n){
+        	if(typeof n == "undefined"){
+        		return;
+        	}
 			var newN = n;
-			if(n.comparedTo($scope.prestigeGoal[$scope.currentPrestige]) >= 0){
+			var goal;
+			if($scope.prestigeTier == 0){
+				goal = $scope.prestigeGoal[$scope.currentPrestige];
+			}else{
+				goal = $scope.secondPrestigeGoal[$scope.currentPrestige]
+			}
+			if(n.comparedTo(goal) >= 0){
 				if($scope.sprintFinished == false){
 					$scope.sprintFinished = true;
 					timerStop();
-					if($scope.player.sprintTimes.length < $scope.currentPrestige){
-						throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
-					}else if($scope.player.sprintTimes.length == $scope.currentPrestige){
-						$scope.player.sprintTimes.push(timerSeconds);
-					}else if(timerSeconds < $scope.player.sprintTimes[$scope.currentPrestige]){
-						$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
+					if($scope.prestigeTier == 0){
+						if($scope.player.sprintTimes.length < $scope.currentPrestige){
+							throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
+						}else if($scope.player.sprintTimes.length == $scope.currentPrestige){
+							$scope.player.sprintTimes.push(timerSeconds);
+						}else if(timerSeconds < $scope.player.sprintTimes[$scope.currentPrestige]){
+							$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
+						}
 					}
+					if($scope.prestigeTier == 1){
+						if($scope.player.sprintSecondTimes.length < $scope.currentPrestige){
+							throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
+						}else if($scope.player.sprintSecondTimes.length == $scope.currentPrestige){
+							$scope.player.sprintSecondTimes.push(timerSeconds);
+						}else if(timerSeconds < $scope.player.sprintSecondTimes[$scope.currentPrestige]){
+							$scope.player.sprintSecondTimes[$scope.currentPrestige] = timerSeconds;
+						}
+					}					
 				}
-				newN = $scope.prestigeGoal[$scope.currentPrestige];
+				newN = goal;
 			}
 			return newN;
 		}
@@ -382,7 +531,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			
 		$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, element) {
 			// If the element is an upgrade multiplier
-			if(element[0].innerHTML.indexOf("multiplierUpgrade") > -1){
+			if(element[0].innerHTML.indexOf("Upgrade") > -1){
 				refreshAllUpgradeLine(false);
 			}
 		});
