@@ -348,6 +348,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				$scope.player.producerUpgradePrice = [];
 				$scope.player.maxSecondPrestige = 0;
 				$scope.player.sprintSecondTimes = [];
+				$scope.prestigeTier = 0;
 				$scope.player.version = '1.0';				
 			}
 			versionComparison = versionCompare($scope.player.version,'0.11.2');
