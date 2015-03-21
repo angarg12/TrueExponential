@@ -151,12 +151,11 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 								"<span class=\"supsub\">" +
 									"<span class=\"superscript\">" +
 										"<span class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeLevel["+number+"])\"></span>" +
-										"<span class=\"mathjax_corollary\">$$\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.producerUpgradePrice[number])+"} \\Rightarrow\\; r(t+1) = r(t) + 1$$</span>" +
+										"<span class=\"mathjax_corollary\">$$\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.producerUpgradePrice[number])+"} \\Rightarrow\\; r(t+1) = r(t) + 0.0001$$</span>" +
 									"</span>" +
 									"<span class=\"subscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeManual["+number+"])\"></span>" +
 								"</span>";
-					}else{
-						upgradeDiv.innerHTML = "<b>Corollary "+(number+1)+".</b><span class=\"supsub\"><span class=\"superscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeLevel["+number+"])\"></span><span class=\"subscript\" class=\"ng-binding\" ng-bind-html=\"trustedPrettifyNumber(player.producerUpgradeManual["+number+"])\"></span></span><span class=\"mathjax_container\">$$\\quad \\frac{n(t)}{"+prettifyNumberTeX($scope.player.producerUpgradePrice[number])+"} \\Rightarrow\\; $$ Corollary "+(number)+"$$(t+1) = $$ Corollary "+(number)+"$$(t) + 1$$</span>";
+					}else{						
 						upgradeDiv.innerHTML = "<b>Corollary "+(number+1)+".</b>" +
 						"<span class=\"supsub\">" +
 							"<span class=\"superscript\">" +
