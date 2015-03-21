@@ -7,13 +7,21 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
             });
         }
     }
-}).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', '$compile', function($scope,$document,$interval,$sce,$filter,$timeout,$compile) { 
+}).filter('range', function() {
+  return function(input, total) {
+	    total = parseInt(total);
+	    for (var i=0; i<total; i++)
+	      input.push(i);
+	    return input;
+	  };
+	}).
+	controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', '$compile', function($scope,$document,$interval,$sce,$filter,$timeout,$compile) { 
 		$scope.version = '1.0';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
 			clickMultiplier: new Decimal(1),
-			multiplier: new Decimal(1),
+			multiplier: new Decimal("1e50000"),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],			
 			producerUpgradeLevel: [],	
@@ -93,6 +101,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.producerUpgradePrice[number] = producerUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
+				refreshUpgradeLine(number, true);
             }
         };
 		
@@ -119,6 +128,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				var exponent = Decimal.pow(firstTerm,secondTerm);
 				$scope.player.multiplierUpgradePrice[number] = multiplierUpgradeBasePrice[number].
 					times(Decimal.pow(2,exponent));
+				refreshUpgradeLine(number, true);
             }
         };
         

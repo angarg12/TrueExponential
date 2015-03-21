@@ -54,7 +54,7 @@
         <div id="buildings">
             <div class="section">2. Contributions</div>
             <br>
-            <div ng-repeat="upgrade in player.multiplierUpgradeLevel" on-finish-render="ngRepeatFinished" ng-if="prestigeTier == 0">
+            <div ng-repeat="upgrade in [] | range:player.multiplierUpgradeLevel.length" on-finish-render="ngRepeatFinished" ng-if="prestigeTier == 0">
                 <div class="line" id="multiplierUpgrade{{$index}}" 
                 ng-click="buyMultiplierUpgrade($index)" 
                 ng-disabled="player.n.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0"
@@ -63,7 +63,7 @@
                 </div>
                 <br>
             </div>
-            <div ng-repeat="upgrade in player.producerUpgradeLevel" on-finish-render="ngRepeatFinished" ng-if="prestigeTier == 1">
+            <div ng-repeat="upgrade in [] | range:player.producerUpgradeLevel.length" on-finish-render="ngRepeatFinished" ng-if="prestigeTier == 1">
                 <div class="line" id="producerUpgrade{{$index}}" 
                 ng-click="buyProducerUpgrade($index)" 
                 ng-disabled="player.n.comparedTo(player.producerUpgradePrice[{{$index}}]) < 0"
