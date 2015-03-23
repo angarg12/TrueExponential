@@ -73,7 +73,7 @@
                 <br>
             </div>
         </div>
-		<div id="sprints" ng-if="player.maxPrestige > 0 || player.maxSecondPrestige > 0">
+		<div id="sprints" ng-if="player.maxPrestige >= 0">
             <div class="section">3. Experimental results ({{player.sprintTimes.length+player.sprintSecondTimes.length}}/{{prestigeGoal.length+secondPrestigeGoal.length}})</div>
             <br>
             <table id="sprintsTable" class="table" align="center">
@@ -104,7 +104,7 @@
 					</tr>
 			    </tbody>
             </table>
-            <table id="sprintsSecondTable" class="table" align="center" ng-if="player.maxSecondPrestige > 0">
+            <table id="sprintsSecondTable" class="table" align="center" ng-if="player.maxSecondPrestige >= 0">
             	<thead>
 	                <tr>
 	                    <td>
@@ -134,10 +134,10 @@
             </table>
         </div>
         <div id="options">	            
-            <div class="section" ng-if="player.maxPrestige == 0">3. Conclusion</div>
-            <div class="section" ng-if="player.maxPrestige > 0">4. Conclusion</div>
-            <div class="line clickable" id="prestige" ng-click="prestige(player.sprintTimes.length, 0)" ng-if="sprintFinished && player.sprintTimes.length < prestigeGoal.length">Start next experiment</div>
-            <div class="line clickable" id="prestige2" ng-click="prestige(player.sprintSecondTimes.length, 1)" ng-if="sprintFinished && player.sprintTimes.length > 3 && player.sprintSecondTimes.length < secondPrestigeGoal.length">Start next experiment&#8217;</div>
+            <div class="section" ng-if="player.maxPrestige < 0">3. Conclusion</div>
+            <div class="section" ng-if="player.maxPrestige >= 0">4. Conclusion</div>
+            <div class="line clickable" id="prestige" ng-click="prestige(player.sprintTimes.length, 0)" ng-if="currentPrestige <= player.maxPrestige && player.sprintTimes.length < prestigeGoal.length">Start next experiment</div>
+            <div class="line clickable" id="prestige2" ng-click="prestige(player.sprintSecondTimes.length, 1)" ng-if="((prestigeTier == 0 && player.sprintTimes.length > 3) || (prestigeTier == 1 && currentPrestige <= player.maxSecondPrestige)) && player.sprintSecondTimes.length < secondPrestigeGoal.length">Start next experiment<sup>&prime;</sup></div>
             <div class="line clickable" id="reset" ng-click="reset(true)">Retire</div>
             <div class="line" id="save"><span class="clickable" ng-click="save()">Save experiment</span>&nbsp; Last: {{lastSave}}</div>
             <div class="line">Use log scale <input type="checkbox" ng-model="player.preferences.logscale"></div>

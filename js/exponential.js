@@ -9,8 +9,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
     }
 }).filter('range', function() {
   return function(input, total) {
-	    total = parseInt(total);
-	    for (var i=0; i<total; i++)
+	    intTotal = parseInt(total);
+	    for (var i=0; i<intTotal; i++)
 	      input.push(i);
 	    return input;
 	  };
@@ -28,8 +28,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			producerUpgradeManual: [],
 			producerUpgradePrice: [],
 			n: new Decimal(1),
-			maxPrestige: 0,
-			maxSecondPrestige: 0,
+			maxPrestige: -1,
+			maxSecondPrestige: -1,
 			version: $scope.version,
 			sprintTimes: [],
 			sprintSecondTimes: [],
@@ -171,13 +171,13 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				upgradeDiv = linkingFunction($scope)[0];
 				MathJax.Hub.Queue(['Typeset',MathJax.Hub,upgradeDiv]);
 			}
-        };
+        }
         
         function refreshAllUpgradeLine(force){
         	for(var i = 0; i < $scope.multiplierUpgradePower.length; i++){
         		refreshUpgradeLine(i, force);
         	}
-        };
+        }
 
 		$scope.save = function save() {
 			localStorage.setItem("playerStored", JSON.stringify($scope.player));
@@ -242,22 +242,12 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		
 		$scope.prestige = function prestige(level, tier){
 			// Save the values of the player that persist between prestiges
-			var newPrestige = $scope.player.maxPrestige;
-			var newSecondPrestige = $scope.player.maxSecondPrestige;
-			if($scope.prestigeTier == 0){
-				if(level > newPrestige){
-					newPrestige = level;
-				}
-			}else{
-				if(level > newSecondPrestige){
-					newSecondPrestige = level;
-				}		
-			}
-			
-			preferences = $scope.player.preferences;
-			playerVersion = $scope.player.version;
-			sprintTimes = $scope.player.sprintTimes;
-			sprintSecondTimes = $scope.player.sprintSecondTimes;
+			var maxPrestige = $scope.player.maxPrestige;
+			var maxSecondPrestige = $scope.player.maxSecondPrestige;
+			var preferences = $scope.player.preferences;
+			var playerVersion = $scope.player.version;
+			var sprintTimes = $scope.player.sprintTimes;
+			var sprintSecondTimes = $scope.player.sprintSecondTimes;
 			
 			// Reset the player
 			init();
@@ -267,8 +257,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			timerStart();
 			
 			// Restore the values
-			$scope.player.maxPrestige = newPrestige;
-			$scope.player.maxSecondPrestige = newSecondPrestige;
+			$scope.player.maxPrestige = maxPrestige;
+			$scope.player.maxSecondPrestige = maxSecondPrestige;
 			$scope.player.preferences = preferences;
 			$scope.player.version = playerVersion;
 			$scope.player.sprintTimes = sprintTimes;
@@ -485,11 +475,15 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				if($scope.sprintFinished == false){
 					$scope.sprintFinished = true;
 					timerStop();
+
 					if($scope.prestigeTier == 0){
 						if($scope.player.sprintTimes.length < $scope.currentPrestige){
 							throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
 						}else if($scope.player.sprintTimes.length == $scope.currentPrestige){
 							$scope.player.sprintTimes.push(timerSeconds);
+							if($scope.currentPrestige > $scope.player.maxPrestige){
+								$scope.player.maxPrestige = $scope.currentPrestige;
+							}
 						}else if(timerSeconds < $scope.player.sprintTimes[$scope.currentPrestige]){
 							$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
 						}
@@ -499,6 +493,9 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 							throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
 						}else if($scope.player.sprintSecondTimes.length == $scope.currentPrestige){
 							$scope.player.sprintSecondTimes.push(timerSeconds);
+							if($scope.currentPrestige > $scope.player.maxSecondPrestige){
+								$scope.player.maxSecondPrestige = $scope.currentPrestige;
+							}
 						}else if(timerSeconds < $scope.player.sprintSecondTimes[$scope.currentPrestige]){
 							$scope.player.sprintSecondTimes[$scope.currentPrestige] = timerSeconds;
 						}
