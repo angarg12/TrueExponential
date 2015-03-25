@@ -9,6 +9,13 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
             }
         }
     }
+}).filter('range', function() {
+	return function(input, total) {
+		intTotal = parseInt(total);
+			for (var i=0; i<intTotal; i++)
+				input.push(i);
+		return input;
+	};
 }).controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', function($scope,$document,$interval,$sce,$filter,$timeout) { 
 		$scope.version = '0.11.2';
 		$scope.Math = window.Math;

@@ -63,7 +63,7 @@
         <div id="buildings">
             <div class="section">2. Contributions</div>
             <br>
-            <div ng-repeat="upgrade in multiplierUpgradePower" on-finish-render="ngRepeatFinished">
+            <div ng-repeat="upgrade in [] | range:player.multiplierUpgradeLevel.length" on-finish-render="ngRepeatFinished">
                 <div class="line" id="multiplierUpgrade{{$index}}" 
                 ng-click="buyMultiplierUpgrade($index)" 
                 ng-disabled="player.n.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0"
