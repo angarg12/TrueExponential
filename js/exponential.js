@@ -26,7 +26,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],
 			n: new Decimal(1),
-			maxPrestige: 0,
+			maxPrestige: -1,
 			version: $scope.version,
 			sprintTimes: [],
 			preferences: {logscale: false,
@@ -149,13 +149,10 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		
 		$scope.prestige = function prestige(level){
 			// Save the values of the player that persist between prestiges
-			var newPrestige = $scope.player.maxPrestige;
-			if(level > newPrestige){
-				newPrestige = level;
-			}
-			preferences = $scope.player.preferences;
-			playerVersion = $scope.player.version;
-			sprintTimes = $scope.player.sprintTimes;
+			var maxPrestige = $scope.player.maxPrestige;
+			var preferences = $scope.player.preferences;
+			var playerVersion = $scope.player.version;
+			var sprintTimes = $scope.player.sprintTimes;
 			
 			// Reset the player
 			init();
@@ -165,7 +162,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			timerStart();
 			
 			// Restore the values
-			$scope.player.maxPrestige = newPrestige;
+			$scope.player.maxPrestige = maxPrestige;
 			$scope.player.preferences = preferences;
 			$scope.player.version = playerVersion;
 			$scope.player.sprintTimes = sprintTimes;
@@ -348,6 +345,9 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 						throw new Error("Inconsistent prestige value: "+$scope.currentPrestige);
 					}else if($scope.player.sprintTimes.length == $scope.currentPrestige){
 						$scope.player.sprintTimes.push(timerSeconds);
+						if($scope.currentPrestige > $scope.player.maxPrestige){
+							$scope.player.maxPrestige = $scope.currentPrestige;
+						}
 					}else if(timerSeconds < $scope.player.sprintTimes[$scope.currentPrestige]){
 						$scope.player.sprintTimes[$scope.currentPrestige] = timerSeconds;
 					}

@@ -73,7 +73,7 @@
                 <br>
             </div>
         </div>
-		<div id="sprints" ng-if="player.maxPrestige > 0">
+		<div id="sprints" ng-if="player.maxPrestige >= 0">
             <div class="section">3. Experimental results</div>
             <br>
             <table id="sprintsTable" class="table" align="center">
@@ -106,9 +106,9 @@
             </table>
         </div>
         <div id="options">	            
-            <div class="section" ng-if="player.maxPrestige == 0">3. Conclusion</div>
-            <div class="section" ng-if="player.maxPrestige > 0">4. Conclusion</div>
-            <div class="line clickable" id="prestige" ng-click="prestige(currentPrestige+1)" ng-if="player.sprintTimes.length > currentPrestige && currentPrestige < prestigeGoal.length-1">Start next experiment</div>
+            <div class="section" ng-if="player.maxPrestige < 0">3. Conclusion</div>
+            <div class="section" ng-if="player.maxPrestige >= 0">4. Conclusion</div>
+            <div class="line clickable" id="prestige" ng-click="prestige(player.sprintTimes.length)" ng-if="currentPrestige <= player.maxPrestige && player.sprintTimes.length < prestigeGoal.length">Start next experiment</div>
             <div class="line clickable" id="reset" ng-click="reset(true)">Retire</div>
             <div class="line" id="save"><span class="clickable" ng-click="save()">Save experiment</span>&nbsp; Last: {{lastSave}}</div>
             <div class="line">Use log scale <input type="checkbox" ng-model="player.preferences.logscale"></div>
