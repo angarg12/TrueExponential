@@ -18,3 +18,14 @@ I made a little demo showcasing how fast exponential growth is, and after popula
 Technology
 -----------
 The game is developed in Javascript (Angular.js) and uses [decimal.js](https://github.com/MikeMcl/decimal.js/) to break free of the 1e308 limit of regular JS numbers. Still, the maximum number provided by decimal.js dwarfs in the scale of exponential growth, and libraries that provided even bigger numbers are always welcome.
+
+License
+-----------
+
+TrueExponential, an exponential incremental experiment.
+
+Copyright (C) 2015 Andrés Garcia Garcia (angarg12)
+
+This project is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Derivative works should include attribution to the original author. The original author does not endorse or promote derivative works, unless explicit consent is given.
