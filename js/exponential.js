@@ -20,7 +20,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
-			clickMultiplier: new Decimal(1),
 			multiplier: new Decimal(1),
 			multiplierUpgradeLevel: [],
 			multiplierUpgradePrice: [],			
@@ -109,9 +108,13 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			return $sce.trustAsHtml(prettifyNumberHTML(value));
 		};
 		
-        $scope.click = function() {
-			var tempN = $scope.player.n.plus($scope.player.clickMultiplier);
-			$scope.player.n = adjustN(tempN);
+        $scope.getFlatIncome = function() {
+			if($scope.prestigeTier === 0 && $scope.currentPrestige < 11){
+				return new Decimal($scope.currentPrestige+1).times(new Decimal($scope.currentPrestige+1));
+				//return Decimal.pow(new Decimal(2), new Decimal($scope.currentPrestige));
+			}else{
+				return new Decimal(1);
+			}
         };
         
         $scope.buyMultiplierUpgrade = function(number) {
@@ -203,7 +206,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				timerSet(seconds);
 				$scope.player.n = new Decimal($scope.player.n);
 				$scope.player.multiplier = new Decimal($scope.player.multiplier);
-				$scope.player.clickMultiplier = new Decimal($scope.player.clickMultiplier);
 				for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 					$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 				}
@@ -282,7 +284,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		};
 
         function update() {
-			$scope.player.n = $scope.player.n.plus($scope.player.clickMultiplier);
+			$scope.player.n = $scope.player.n.plus($scope.getFlatIncome());
             var tempN;
             if($scope.isEndgame($scope.currentPrestige)){
             	tempN = Decimal.pow($scope.player.n,$scope.player.multiplier);
@@ -516,6 +518,18 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		$scope.isEndgame = function isEndgame(level){
 			return level == $scope.prestigeGoal.length-1;
 		}
+		
+		$scope.isMultiplierDisabled = function(index) {
+			return $scope.player.n && 
+					$scope.player.multiplierUpgradePrice[index] &&
+					$scope.player.n.comparedTo($scope.player.multiplierUpgradePrice[index]) < 0;
+		};
+		
+		$scope.isProducerDisabled = function(index) {
+			return $scope.player.n && 
+					$scope.player.producerUpgradePrice[index] &&
+					$scope.player.n.comparedTo($scope.player.producerUpgradePrice[index]) < 0;
+		};
 		
 		$timeout(function(){
 			if(localStorage.getItem("playerStored") != null){

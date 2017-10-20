@@ -34,7 +34,7 @@
             <div class="line" ng-if="isEndgame(currentPrestige)"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>)<sup><i>r</i>(<i>t</i>)</sup></div>
             <div class="line"><b>Axiom.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>t</i> = <span>{{getSprintTime()}}</span></div>
             <div class="line"><b>Theorem<span ng-if="prestigeTier == 1"><sup>&prime;</sup></span> {{currentPrestige}}.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>) $$\equiv$$ <span ng-bind-html="trustedPrettifyNumber(getGoal())"></span><span ng-if="sprintFinished" style="float:right">&#8718;</span></div>
-            <div class="line"><b>Lemma.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>) + 1</div>  
+            <div class="line"><b>Lemma.</b>&nbsp;&nbsp;&nbsp;&nbsp; <i>n</i>(<i>t</i>+1) = <i>n</i>(<i>t</i>) + <span ng-bind-html="trustedPrettifyNumber(getFlatIncome())"/></div>  
             <div class="progress-striped">
 				<div ng-if="!sprintFinished">
 					<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width:{{player.n.div(getGoal())*100}}%" ng-if="!player.preferences.logscale">
@@ -57,8 +57,8 @@
             <div ng-repeat="upgrade in [] | range:player.multiplierUpgradeLevel.length" on-finish-render="ngRepeatFinished" ng-if="prestigeTier == 0">
                 <div class="line" id="multiplierUpgrade{{$index}}" 
                 ng-click="buyMultiplierUpgrade($index)" 
-                ng-disabled="player.n.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0"
-                ng-class="player.n.comparedTo(player.multiplierUpgradePrice[{{$index}}]) < 0 ? 'unclickable' : 'clickable'">
+                ng-disabled="isMultiplierDisabled($index)"
+                ng-class="isMultiplierDisabled($index) ? 'unclickable' : 'clickable'">
                 	placeholder
                 </div>
                 <br>
@@ -66,8 +66,8 @@
             <div ng-repeat="upgrade in [] | range:player.producerUpgradeLevel.length" on-finish-render="ngRepeatFinished" ng-if="prestigeTier == 1">
                 <div class="line" id="producerUpgrade{{$index}}" 
                 ng-click="buyProducerUpgrade($index)" 
-                ng-disabled="player.n.comparedTo(player.producerUpgradePrice[{{$index}}]) < 0"
-                ng-class="player.n.comparedTo(player.producerUpgradePrice[{{$index}}]) < 0 ? 'unclickable' : 'clickable'">
+                ng-disabled="isProducerDisabled($index)"
+                ng-class="isProducerDisabled($index) ? 'unclickable' : 'clickable'">
                 	placeholder
                 </div>
                 <br>
