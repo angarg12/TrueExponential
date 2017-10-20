@@ -5,50 +5,20 @@ body {
 .title {
 	width: 80%;
 	text-align:center;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 250%;
-}
-
-.author {
-	width: 50%;
-	text-align:center;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.abstract {
-	width: 40%;
-    margin-left: auto;
-    margin-right: auto;
-    font-family: "MathJax_Main";
-	text-align: justify;
-    line-height: 150%;
-	margin-top: 1em;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 200%;
 }
 
 .section {
-    font-size: 2.2em;
-    align:left;
+	font-size: 150%;
+	align:left;
 	font-family: MathJax_Main;
-}
-
-.main_text {
-    margin-left: auto;
-    margin-right: auto;
-    width: 80%;
 }
 
 .line {
 	font-family: MathJax_Main;
-	font-size: 1.6em;
 	text-indent: 2em;
-}
-	
-.supsub {
-	position: relative;
-	text-indent: 0em;
-	text-decoration: none;
 }
 	
 .superscript {
@@ -74,6 +44,77 @@ body {
 	display: inline-block;
 	font-size: 141%;
 	width: 50em;
+}
+
+.table {
+	font-family: MathJax_Main;
+	font-size: 100%;
+	border-collapse:collapse; 
+	text-align: center;
+}
+
+.abstract {
+	width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: "MathJax_Main";
+	text-align: justify;
+    line-height: 150%;
+	margin-top: 1em;
+	font-size: 80%;
+}
+
+@media screen and (min-width: 1100px) {
+	.title {
+		font-size: 250%;
+	}
+
+	.section {
+		font-size: 2.2em;
+	}
+
+	.line {
+		font-size: 1.6em;
+	}
+		
+	.superscript {
+		font-size: 70.7%;
+	}
+
+	.subscript {
+		font-size: 70.7%;
+	}
+
+	.mathjax_corollary {
+		font-size: 141%;
+	}
+
+	.table {
+		font-size: 1.4em;
+	}
+	
+	.abstract {
+		font-size: 100%;
+	}
+}
+
+.author {
+	width: 50%;
+	text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.main_text {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+	
+.supsub {
+	position: relative;
+	text-indent: 0em;
+	text-decoration: none;
 }
 
 .acknowledgements {
@@ -104,14 +145,6 @@ body {
 	-ms-user-select: none;
 	user-select: none;
     text-decoration: underline;
-}
-
-
-.table {
-	font-family: MathJax_Main;
-	font-size: 1.4em;
-	border-collapse:collapse; 
-	text-align: center;
 }
 
 .table tbody{
