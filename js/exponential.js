@@ -16,7 +16,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 	  };
 	}).
 	controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', '$compile', function($scope,$document,$interval,$sce,$filter,$timeout,$compile) { 
-		$scope.version = '1.0';
+		$scope.version = '1.1';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -50,9 +50,9 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		balance the goals
 		*/
 		// Constants
-		$scope.prestigeGoal = [new Decimal("1e3"),
-							new Decimal("1e6"),
-							new Decimal("1e16"),
+		$scope.prestigeGoal = [new Decimal("1e2"),
+							new Decimal("1e5"),
+							new Decimal("1e15"),
 							new Decimal("1e200"),
 							new Decimal("1e1250"),
 							new Decimal("1e2500"),
@@ -237,6 +237,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				localStorage.removeItem("playerStored");
 				$scope.currentPrestige = 0;
 				$scope.prestigeTier = 0;
+				refreshAllUpgradeLine(true);
 			}
 		}
 		
@@ -281,6 +282,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		};
 
         function update() {
+			$scope.player.n = $scope.player.n.plus($scope.player.clickMultiplier);
+			console.log($scope.player.n.plus($scope.player.clickMultiplier))
             var tempN;
             if($scope.isEndgame($scope.currentPrestige)){
             	tempN = Decimal.pow($scope.player.n,$scope.player.multiplier);
