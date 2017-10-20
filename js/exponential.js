@@ -16,7 +16,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 	  };
 	}).
 	controller('IncCtrl',['$scope','$document','$interval', '$sce', '$filter', '$timeout', '$compile', function($scope,$document,$interval,$sce,$filter,$timeout,$compile) { 
-		$scope.version = '1.1';
+		$scope.version = '1.2';
 		$scope.Math = window.Math;
 		
 		const startPlayer = {
@@ -33,7 +33,8 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			sprintTimes: [],
 			sprintSecondTimes: [],
 			preferences: {logscale: false,
-				abstractVisible: true}
+				abstractVisible: true},
+			lastLogin: null
 			};
 		
 		// Procedurally generated
@@ -45,6 +46,9 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		$scope.currentPrestige = 0;
 		var timer;
 		var timerSeconds = 0;
+		
+		$scope.loading = false;
+		$scope.offlineProgress = 0;
 		/*		 
 		balance the goals
 		*/
@@ -135,6 +139,10 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
             }
         };
         
+		function refreshEntirePage(){
+			MathJax.Hub.Queue(['Typeset',MathJax.Hub]);
+		};
+		
         function refreshUpgradeLine(number, force){
         	// Update formula and typeset
 			var upgradeDiv = document.getElementById('multiplierUpgrade'+number);
@@ -190,6 +198,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			localStorage.setItem("prestigeTier", $scope.prestigeTier);
 			var d = new Date();
 			$scope.lastSave = d.toLocaleTimeString();
+			$scope.player.lastLogin = Math.floor(Date.now()/1000);
 		}
 		
 		$scope.load = function load() {
@@ -206,6 +215,7 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 				timerSet(seconds);
 				$scope.player.n = new Decimal($scope.player.n);
 				$scope.player.multiplier = new Decimal($scope.player.multiplier);
+				
 				for (var i = 0; i < $scope.player.multiplierUpgradePrice.length; i++) { 
 					$scope.player.multiplierUpgradePrice[i] = new Decimal($scope.player.multiplierUpgradePrice[i]);
 				}
@@ -344,6 +354,11 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 		}
 		
 		function versionControl(ifImport){
+			versionComparison = versionCompare($scope.player.version,'1.2');
+			if(versionComparison === -1 || versionComparison === false){
+				$scope.player.lastLogin = Math.floor(Date.now()/1000);		
+				$scope.player.version = '1.2';	
+			}
 			versionComparison = versionCompare($scope.player.version,'1.0');
 			if(versionComparison === -1 || versionComparison === false){
 				$scope.player.producerUpgradeLevel = [];	
@@ -531,6 +546,29 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 					$scope.player.n.comparedTo($scope.player.producerUpgradePrice[index]) < 0;
 		};
 		
+		function turnOffOfflineMessage() {
+			$scope.loading = false;
+			$timeout(refreshEntirePage);
+		}
+		
+		function processOffline(secondsElapsed, total){
+			if(secondsElapsed <= 0) {
+				$timeout(turnOffOfflineMessage, 1000);
+				
+				$interval(update,1000);
+				$interval($scope.save,60000);
+			}else{
+				var iters = 10000;
+				for(var i = 0; i < Math.min(secondsElapsed, iters); i++){
+					update();
+					timerSeconds++;
+				}
+				var afterSeconds = secondsElapsed-Math.min(secondsElapsed, iters);
+				$scope.offlineProgress = Math.round((1-afterSeconds/total)*100);
+				$timeout(function(){processOffline(afterSeconds, total)});
+			}
+		}
+		
 		$timeout(function(){
 			if(localStorage.getItem("playerStored") != null){
 				$scope.load();
@@ -547,9 +585,13 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 			}else{
 				generatePrestigeUpgrades($scope.currentPrestige,true);
 			}
-            $interval(update,1000);
-            $interval($scope.save,60000);
+			
+			var currentTime = Math.floor(Date.now()/1000);
+			var secondsElapsed = Math.min(currentTime-$scope.player.lastLogin, 3600);
+			$scope.loading = true;
+			
 			timerStart();
+			$timeout(function(){processOffline(secondsElapsed, secondsElapsed)});
         });
 			
 		$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, element) {
