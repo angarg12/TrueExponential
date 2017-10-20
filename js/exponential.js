@@ -283,7 +283,6 @@ angular.module('incremental',['ngAnimate']).directive('onFinishRender', function
 
         function update() {
 			$scope.player.n = $scope.player.n.plus($scope.player.clickMultiplier);
-			console.log($scope.player.n.plus($scope.player.clickMultiplier))
             var tempN;
             if($scope.isEndgame($scope.currentPrestige)){
             	tempN = Decimal.pow($scope.player.n,$scope.player.multiplier);
