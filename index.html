@@ -49,7 +49,8 @@
 						100%
 					</div>
 				</div>
-            </div>		
+            </div>
+            <div class="line">Use log scale <input type="checkbox" ng-model="player.preferences.logscale"></div>			
         </div>
         <div id="buildings">
             <div class="section">2. Contributions</div>
@@ -140,7 +141,6 @@
             <div class="line clickable" id="prestige2" ng-click="prestige(player.sprintSecondTimes.length, 1)" ng-if="((prestigeTier == 0 && player.sprintTimes.length > 3) || (prestigeTier == 1 && currentPrestige <= player.maxSecondPrestige)) && player.sprintSecondTimes.length < secondPrestigeGoal.length">Start next experiment<sup>&prime;</sup></div>
             <div class="line clickable" id="reset" ng-click="reset(true)">Retire</div>
             <div class="line" id="save"><span class="clickable" ng-click="save()">Save experiment</span>&nbsp; Last: {{lastSave}}</div>
-            <div class="line">Use log scale <input type="checkbox" ng-model="player.preferences.logscale"></div>
         </div>	     
         <div id="acknowledgements">	
             <div class="section">Acknowledgements</div>
